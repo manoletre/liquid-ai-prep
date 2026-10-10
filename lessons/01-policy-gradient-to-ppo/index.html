@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 1 (v2) · Policy gradient → PPO → GRPO</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<style>
+:root{
+  --bg:#0e1117; --card:#151a23; --card2:#1b212d; --fg:#e6e6e6; --muted:#8b93a7; --line:#262d3a;
+  --pi:#b392f0; --old:#e08fd0; --y:#7aa2f7; --x:#5fc9b6; --R:#9ece6a; --b:#c3e88d;
+  --rho:#ff9e64; --eps:#f7768e; --al:#e0af68; --st:#a9b1d6; --good:#9ece6a; --bad:#f7768e;
+}
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:36px 22px 90px}
+h1{font-size:30px;margin:0 0 4px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 22px}
+h2{font-size:22px;margin:0 0 14px;letter-spacing:-.01em}
+h2 .n{color:var(--muted);font-weight:500;margin-right:8px}
+section{border-top:1px solid var(--line);padding:34px 0 8px}
+.hook{background:linear-gradient(135deg,#1d1830,#14202a);border:1px solid #2f2a4a;border-radius:14px;padding:18px 22px;margin:8px 0 18px}
+.hook b{color:var(--al)}
+.key{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px;font-size:14px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:2px 11px;cursor:help}
+.media{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);gap:18px;align-items:start}
+@media(max-width:860px){.media{grid-template-columns:1fr}}
+video{width:100%;border-radius:12px;border:1px solid var(--line);background:#000;display:block}
+.caps{list-style:none;margin:0;padding:0;font-size:15.5px}
+.caps li{padding:8px 12px;border-left:3px solid var(--line);color:var(--muted);cursor:pointer;transition:all .25s;border-radius:0 8px 8px 0}
+.caps li:hover{background:var(--card)}
+.caps li.on{color:var(--fg);border-left-color:var(--al);background:var(--card)}
+.caps .t{font-variant-numeric:tabular-nums;font-size:12px;color:#5d6577;margin-right:6px}
+.eq{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 18px;margin:16px 0;overflow-x:auto}
+.katex{color:var(--fg);font-size:1.12em}
+.sym{cursor:help;border-radius:3px;transition:background .15s}
+.sym.hl{background:rgba(224,175,104,.25)}
+.k-pi,.k-theta{color:var(--pi)} .k-piold{color:var(--old)} .k-y{color:var(--y)} .k-x{color:var(--x)}
+.k-R,.k-A{color:var(--R)} .k-b{color:var(--b)} .k-rho{color:var(--rho)} .k-eps{color:var(--eps)}
+.k-alpha{color:var(--al)} .k-mu,.k-sigma{color:var(--st)} .k-beta{color:var(--al)}
+#tip{position:fixed;z-index:50;max-width:300px;background:#f1f3f8;color:#11141b;font-size:14px;line-height:1.45;padding:8px 11px;border-radius:9px;pointer-events:none;opacity:0;transition:opacity .12s}
+#tip b{display:block}
+.worked{background:#1a2316;border:1px solid #2c3d24;border-radius:12px;padding:12px 18px;margin:16px 0}
+.worked h4{margin:0 0 4px;font-size:15px;color:var(--good)}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:18px 0}
+details summary{cursor:pointer;font-weight:600;list-style:none}
+details summary::before{content:"🧠 Quick check · ";color:var(--al);font-weight:600}
+details[open] summary{margin-bottom:8px}
+details .ans{color:#cfd3dc}
+.widget{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin:16px 0}
+.widget .title{font-weight:600;margin-bottom:8px}
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:12px;font-size:14.5px;color:#c8ccd6}
+button{font:inherit;font-size:14px;border:1px solid #33405a;background:var(--card2);color:var(--fg);padding:6px 13px;border-radius:8px;cursor:pointer}
+button:hover{border-color:#4a5b80}
+button.on,button.primary{background:#3b3360;border-color:#5b4f93}
+input[type=range]{accent-color:var(--pi);width:130px;vertical-align:middle}
+.val{font-variant-numeric:tabular-nums;font-weight:600;display:inline-block;min-width:34px}
+canvas{display:block;width:100%}
+.readout{font-size:15px;color:#c8ccd6;margin-top:8px;min-height:24px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:760px){.two{grid-template-columns:1fr}}
+.bars .row{display:grid;grid-template-columns:96px 1fr 44px 62px;gap:8px;align-items:center;margin:5px 0;font-size:14px}
+.bars .lbl{color:var(--y);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bars .track{position:relative;height:20px;background:#262d3a;border-radius:5px;overflow:hidden}
+.bars .fill{position:absolute;inset:0 auto 0 0;background:var(--pi);opacity:.9;transition:width .35s}
+.bars .ghost{position:absolute;top:0;bottom:0;width:3px;background:var(--old)}
+.bars .p{text-align:right;font-variant-numeric:tabular-nums}
+.ok{color:var(--good)} .bad{color:var(--bad);font-weight:600}
+.stat{font-size:13.5px;color:var(--muted);margin-top:6px}
+ul.tight{margin:8px 0;padding-left:20px} ul.tight li{margin:6px 0}
+code{background:var(--card2);padding:1px 6px;border-radius:5px;font-size:.9em;color:#d7dae0}
+.summary{background:linear-gradient(135deg,#171c2a,#132026);border:1px solid var(--line);border-radius:14px;padding:16px 22px}
+.summary ol{margin:6px 0;padding-left:22px} .summary li{margin:6px 0}
+.muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="tip"></div>
+<main>
+  <h1>Policy gradient → PPO → GRPO</h1>
+  <p class="sub">Lesson 1 · about 12 minutes · 4 short videos. Click any caption to jump the video to that point.</p>
+
+  <div class="hook"><b>Before you start:</b> in your GRPO run, one response for a prompt was good (A &gt; 0) and is already <b>50% more likely</b> under the current weights than when vLLM sampled it. Should the optimizer keep pushing it up? Commit to yes or no. The answer is in section 2.</div>
+
+  <div class="key" id="key"></div>
+  <p class="muted" style="font-size:14px;margin-top:2px">Same color = same thing, in the videos and on this page. Hover a symbol to see what it means.</p>
+
+  <!-- 1 -->
+  <section>
+    <h2><span class="n">1</span>REINFORCE: push up whatever you sampled</h2>
+    <div class="media">
+      <video id="v1" src="media/01-reinforce.mp4" poster="media/01-reinforce-poster.jpg" controls muted playsinline preload="metadata"></video>
+      <ul class="caps" data-video="v1"></ul>
+    </div>
+    <div class="eq">$$\grad J=\E\big[\grad\log\pit(\Y\mid\X)\cdot\Adv\big],\qquad \Adv=\Rw-\bb$$</div>
+    <p>The baseline <span class="sym k-b" data-k="b">b</span> adds no bias, since \(\E[\grad\log\pit]=\grad\sum\pit=\grad 1=0\), but it cuts the noise a lot. What it can't fix: nothing limits <i>how far</i> one step moves the policy.</p>
+    <details><summary>All rewards in the toy are ≥ 0. Without a baseline, what happens every time a mediocre response is sampled?</summary>
+      <div class="ans">It gets pushed <b>up</b> (R &gt; 0), just less than a good one. Which responses win then depends heavily on which ones happened to be sampled: high variance. With a baseline, A = R − b is negative for below-average responses, so they get pushed <b>down</b>.</div></details>
+  </section>
+
+  <!-- 2 -->
+  <section>
+    <h2><span class="n">2</span>The ratio ρ and PPO's clip</h2>
+    <div class="media">
+      <video id="v2" src="media/02-ratio-and-clip.mp4" poster="media/02-ratio-and-clip-poster.jpg" controls muted playsinline preload="metadata"></video>
+      <ul class="caps" data-video="v2"></ul>
+    </div>
+    <div class="eq">$$\rr=\frac{\pit(\Y\mid\X)}{\piold(\Y\mid\X)}\qquad L^{\text{CLIP}}=\E\Big[\min\big(\rr\Adv,\ \operatorname{clip}(\rr,1-\eps,1+\eps)\,\Adv\big)\Big]$$</div>
+    <div class="worked"><h4>Worked example (this answers the opening question)</h4>
+      <span class="k-eps">ε = 0.2</span>, <span class="k-A">A = +1</span>, <span class="k-rho">ρ = 1.5</span>:
+      min(1.5·1, clip(1.5, 0.8, 1.2)·1) = min(1.5, <b>1.2</b>) = 1.2. That value is a constant, so the <b>gradient is 0</b>. <b>No, stop pushing.</b><br>
+      Flip the sign, <span class="k-A">A = −1</span>: min(−1.5, −1.2) = <b>−1.5</b>, which still depends on ρ, so the gradient is active and pushes ρ back down. A mistake can always be undone.</div>
+    <div class="widget">
+      <div class="title">Try it: the clipped objective for one response</div>
+      <div class="controls">
+        <button id="cpos" class="on">A = +1</button><button id="cneg">A = −1</button>
+        <label><span class="k-eps">ε</span> <input id="ceps" type="range" min="0.05" max="0.5" step="0.01" value="0.2"> <span class="val" id="cepsv">0.20</span></label>
+        <span class="muted" style="font-size:13px">Hover the plot to move ρ.</span>
+      </div>
+      <canvas id="clip" height="300"></canvas>
+      <div class="readout" id="cout"></div>
+    </div>
+    <details><summary>ε = 0.2, A = −1, ρ = 0.7. Does this sample contribute a gradient?</summary>
+      <div class="ans">No. A bad response that is already 30% less likely (ρ &lt; 1 − ε) sits on the flat part: min(−0.7, −0.8) = −0.8, a constant. PPO stops pushing it down.</div></details>
+  </section>
+
+  <!-- 3 -->
+  <section>
+    <h2><span class="n">3</span>Why it matters: K epochs on one batch</h2>
+    <div class="media">
+      <video id="v3" src="media/03-naive-vs-ppo.mp4" poster="media/03-naive-vs-ppo-poster.jpg" controls muted playsinline preload="metadata"></video>
+      <ul class="caps" data-video="v3"></ul>
+    </div>
+    <div class="widget">
+      <div class="title">Try it: same batch, naive vs PPO</div>
+      <div class="controls">
+        <button class="primary" id="erun">Run K epochs</button><button id="enew">New batch</button>
+        <label>K <input id="eK" type="range" min="1" max="20" value="10"> <span class="val" id="eKv">10</span></label>
+        <label><span class="k-alpha">α</span> <input id="elr" type="range" min="0.5" max="12" step="0.5" value="3"> <span class="val" id="elrv">3</span></label>
+        <label><span class="k-eps">ε</span> <input id="eeps" type="range" min="0.05" max="0.5" step="0.01" value="0.2"> <span class="val" id="eepsv">0.20</span></label>
+      </div>
+      <div class="two">
+        <div><div class="muted" style="font-size:14px">Naive: maximize ρ·A</div><div class="bars" id="bn"></div><div class="stat" id="sn"></div></div>
+        <div><div class="muted" style="font-size:14px">PPO: min(ρA, clip(ρ)A)</div><div class="bars" id="bp"></div><div class="stat" id="sp"></div></div>
+      </div>
+      <div class="stat">Pink tick = <span class="k-piold">π<sub>old</sub></span>. PPO's ρ can drift a little past 1 ± ε: one step can overshoot, and pushing the bad responses down indirectly lifts the good one. But it stays bounded.</div>
+    </div>
+    <details><summary>Why does reusing a batch blow up the naive objective but not PPO's?</summary>
+      <div class="ans">Naive ρ·A grows without limit, so on stale data the optimizer keeps pushing the same responses step after step. PPO's objective goes flat once ρ leaves [1−ε, 1+ε] in the helpful direction, so those samples stop contributing a gradient.</div></details>
+  </section>
+
+  <!-- 4 -->
+  <section>
+    <h2><span class="n">4</span>GRPO: PPO without a critic</h2>
+    <div class="media">
+      <video id="v4" src="media/04-grpo.mp4" poster="media/04-grpo-poster.jpg" controls muted playsinline preload="metadata"></video>
+      <ul class="caps" data-video="v4"></ul>
+    </div>
+    <div class="eq">$$\Adv_i=\frac{\Rw_i-\gmu}{\gsig}\quad\text{(same }\Adv_i\text{ for every token of response }i\text{), then the PPO clip from section 2}$$</div>
+    <ul class="tight">
+      <li><b>What's dropped:</b> RLHF-style PPO trains a value model (critic) to predict expected reward. GRPO uses the mean of G = 8 samples instead (your run: 32 prompts × 8).</li>
+      <li><b><span class="k-beta">β</span> = 0</b> (as in DAPO): no KL term, so no reference model to load.</li>
+      <li><b><code>scale_rewards</code>:</b> <code>"group"</code> (default) divides by each group's σ, <code>"batch"</code> by the σ of the whole batch. The mean is always the group's own.</li>
+      <li><b><code>importance_sampling_ratio</code>:</b> vLLM and the trainer compute slightly different token probabilities. TRL reweights by π<sub>trainer</sub>/π<sub>vLLM</sub>, capped. It's another ρ, for a different mismatch.</li>
+    </ul>
+    <details><summary>All 8 completions of a prompt score 1. What does GRPO learn from that prompt?</summary>
+      <div class="ans">Nothing. σ = 0, so every A<sub>i</sub> = 0 (TRL adds a tiny ε to σ, so you get exact zeros). The compute is wasted. Fixes: harder prompts, or filter out such groups (DAPO's dynamic sampling).</div></details>
+  </section>
+
+  <section>
+    <div class="summary"><b>Summary</b>
+      <ol>
+        <li><b>REINFORCE</b> pushes up the log-prob of sampled responses in proportion to the advantage <span class="k-A">A</span> = <span class="k-R">R</span> − <span class="k-b">b</span>. It's unbiased, but noisy and its step size is unbounded.</li>
+        <li><b>PPO</b> reuses a batch for K epochs via <span class="k-rho">ρ</span> = π<sub>θ</sub>/π<sub>old</sub>, and clips so the gradient vanishes once ρ leaves [1−<span class="k-eps">ε</span>, 1+<span class="k-eps">ε</span>] in the helpful direction.</li>
+        <li><b>GRPO</b> = PPO-clip with the critic replaced by group-normalized rewards. Equal rewards in a group give no signal, and β = 0 means no reference model.</li>
+      </ol></div>
+  </section>
+</main>
+
+<script>
+const SYM={
+ pi:["π_θ · policy","Your LLM with weights θ: a probability for every response."],
+ theta:["θ · weights","The parameters being trained."],
+ piold:["π_old · sampling policy","Frozen snapshot of the model that generated the batch."],
+ x:["x · prompt (state)","What the model is conditioned on."],
+ y:["y · response (action)","A generated completion, i.e. a token sequence."],
+ R:["R · reward","Score from a reward function or reward model."],
+ A:["A · advantage","How much better than expected: positive → more likely, negative → less likely."],
+ b:["b · baseline","Typical reward for this prompt. Subtracting it reduces variance without bias."],
+ rho:["ρ · ratio","π_θ(y|x) / π_old(y|x). 1.5 = now 50% more likely than when sampled."],
+ eps:["ε · clip range","How far ρ may move from 1 before the gradient is cut (typically 0.2)."],
+ alpha:["α · learning rate","Step size of each update."],
+ mu:["μ · group mean","Average reward of the G responses to one prompt. This is the baseline."],
+ sigma:["σ · reward std","Std of rewards (of the group, or the batch with scale_rewards=\"batch\")."],
+ beta:["β · KL weight","Penalty for drifting from a reference model. 0 = no reference model."]
+};
+const sym=(k,t)=>"\\htmlClass{sym k-"+k+"}{"+t+"}";
+const MACROS={"\\pit":sym("pi","\\pi_\\theta"),"\\piold":sym("piold","\\pi_{\\text{old}}"),"\\X":sym("x","x"),"\\Y":sym("y","y"),
+ "\\Rw":sym("R","R"),"\\Adv":sym("A","A"),"\\bb":sym("b","b"),"\\rr":sym("rho","\\rho"),"\\eps":sym("eps","\\epsilon"),
+ "\\gmu":sym("mu","\\mu"),"\\gsig":sym("sigma","\\sigma"),"\\grad":"\\nabla_\\theta","\\E":"\\mathbb{E}"};
+const CAPS={
+ v1:[[0,"The update: step size <span class='k-alpha'>α</span> × reward <span class='k-R'>R</span> × “make <span class='k-y'>y</span> more likely”."],[6.4,"A toy policy over 5 answers to one <span class='k-x'>prompt</span>."],[7.4,"Small α: each sampled answer gets a small push. Good answers slowly win."],[14.9,"Big step (α = 8) plus an unlucky sample: R = 0.2 is still &gt; 0, so a weak answer gets pushed up hard."],[21.4,"Now it's likely, so it gets sampled again: <span class='bad'>collapse</span>."],[25.1,"Fix: subtract a baseline <span class='k-b'>b</span>. Below-average answers now go <b>down</b>. The freed mass is spread across the others."],[32.1,"Better than usual ↑, worse than usual ↓."]],
+ v2:[[0,"<span class='k-rho'>ρ</span> compares the new policy with the one that sampled the response."],[6.5,"The PPO objective, built term by term."],[10.5,"<span class='k-A'>A &gt; 0</span>: unclipped, ρ·A rewards pushing forever."],[13.5,"Clip at 1 + <span class='k-eps'>ε</span>: past it the line goes flat, so the gradient is 0."],[17.6,"Worked example: ρ = 1.5 sits on the flat part. Stop pushing."],[25.3,"<span class='bad'>A &lt; 0</span>: the flat region moves to ρ &lt; 1 − ε."],[27.7,"ρ = 1.5 with A &lt; 0 is <i>not</i> clipped. PPO can always undo a mistake."],[33.5,"Once a bad response is 20% less likely, stop."]],
+ v3:[[0,"Two copies of the toy, same starting point."],[2,"One batch of 16, sampled once. Advantages = reward − batch mean."],[7.5,"10 gradient steps on that same batch. Watch the ρ column."],[18.3,"Naive runs away (ρ ≈ 5). PPO stays bounded."]],
+ v4:[[0,"8 responses to one prompt, scored 0/1."],[3,"The group mean <span class='k-mu'>μ</span> is the baseline, so no critic is needed."],[5,"Subtract μ: above average goes positive, below goes negative."],[7.5,"Divide by <span class='k-sigma'>σ</span>: these are the advantages."],[11.5,"All 8 correct → σ = 0 → every A = 0 → <span class='bad'>no learning signal</span>."]]
+};
+const $=id=>document.getElementById(id);
+const fmt=t=>Math.floor(t/60)+":"+String(Math.floor(t%60)).padStart(2,"0");
+// captions synced to video
+document.querySelectorAll(".caps").forEach(ul=>{const v=$(ul.dataset.video);const cs=CAPS[ul.dataset.video];
+  ul.innerHTML=cs.map(([t,h])=>`<li data-t="${t}"><span class="t">${fmt(t)}</span>${h}</li>`).join("");
+  const lis=[...ul.children];
+  lis.forEach(li=>li.onclick=()=>{v.currentTime=+li.dataset.t+0.05;v.play().catch(()=>{});});
+  const sync=()=>{let k=0;cs.forEach(([t],i)=>{if(v.currentTime>=t-0.05)k=i;});lis.forEach((li,i)=>li.classList.toggle("on",i===k));};
+  v.addEventListener("timeupdate",sync);v.addEventListener("seeked",sync);sync();});
+// key + tooltips
+$("key").innerHTML=["pi","piold","x","y","R","A","b","rho","eps","alpha"].map(k=>`<span class="chip sym k-${k}" data-k="${k}">${SYM[k][0]}</span>`).join("");
+const tip=$("tip");const keyOf=el=>el.dataset.k||([...el.classList].find(c=>c.startsWith("k-"))||"").slice(2);
+document.addEventListener("mouseover",e=>{const el=e.target.closest&&e.target.closest(".sym");if(!el)return;const k=keyOf(el);if(!SYM[k])return;
+  tip.innerHTML=`<b>${SYM[k][0]}</b>${SYM[k][1]}`;tip.style.opacity=1;document.querySelectorAll(".k-"+k+".sym").forEach(s=>s.classList.add("hl"));});
+document.addEventListener("mousemove",e=>{tip.style.left=Math.min(e.clientX+14,innerWidth-320)+"px";tip.style.top=(e.clientY+18)+"px";});
+document.addEventListener("mouseout",e=>{const el=e.target.closest&&e.target.closest(".sym");if(el){tip.style.opacity=0;document.querySelectorAll(".hl").forEach(s=>s.classList.remove("hl"));}});
+
+// ---------- clip plot ----------
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const Lc=(r,A,e)=>Math.min(r*A,clamp(r,1-e,1+e)*A);
+const zeroG=(r,A,e)=>(A>0&&r>1+e)||(A<0&&r<1-e);
+let C={A:1,eps:0.2,r:null};
+function fit(c){const d=devicePixelRatio||1,w=c.clientWidth,h=+c.getAttribute("height");c.width=w*d;c.height=h*d;c.style.height=h+"px";const x=c.getContext("2d");x.setTransform(d,0,0,d,0,0);return[x,w,h];}
+function drawClip(){const[x,w,h]=fit($("clip"));const A=C.A,e=C.eps,P={l:44,r:16,t:16,b:34};
+  const sx=r=>P.l+(w-P.l-P.r)*r/2, sy=v=>P.t+(h-P.t-P.b)*(1.7-v)/3.4;
+  x.fillStyle="rgba(247,118,142,.13)";A>0?x.fillRect(sx(1+e),P.t,sx(2)-sx(1+e),h-P.t-P.b):x.fillRect(sx(0),P.t,sx(1-e)-sx(0),h-P.t-P.b);
+  x.strokeStyle="#3a4252";x.lineWidth=1;x.beginPath();x.moveTo(P.l,sy(0));x.lineTo(w-P.r,sy(0));x.moveTo(sx(0),P.t);x.lineTo(sx(0),h-P.b);x.stroke();
+  x.fillStyle="#8b93a7";x.font="12px sans-serif";x.textAlign="center";[0.5,1,1.5,2].forEach(r=>x.fillText(r,sx(r),sy(0)+16));
+  x.fillStyle=css("--rho");x.font="bold 14px sans-serif";x.fillText("ρ",w-P.r-6,sy(0)-8);
+  x.setLineDash([5,5]);x.strokeStyle=css("--eps");[1-e,1+e].forEach(r=>{x.beginPath();x.moveTo(sx(r),P.t);x.lineTo(sx(r),h-P.b);x.stroke();});
+  x.font="12px sans-serif";x.fillStyle=css("--eps");x.fillText("1−ε",sx(1-e),h-P.b+18);x.fillText("1+ε",sx(1+e),h-P.b+18);
+  x.strokeStyle="#5d6577";x.beginPath();x.moveTo(sx(0),sy(0));x.lineTo(sx(1.7),sy(1.7*A));x.stroke();x.setLineDash([]);
+  x.strokeStyle=A>0?css("--good"):css("--bad");x.lineWidth=3.5;x.beginPath();for(let i=0;i<=400;i++){const r=2*i/400;const v=Lc(r,A,e);if(Math.abs(v)>1.7)break;const X=sx(r),Y=sy(v);i?x.lineTo(X,Y):x.moveTo(X,Y);}x.stroke();
+  x.fillStyle=css("--eps");x.font="13px sans-serif";x.fillText("flat → gradient 0",A>0?(sx(1+e)+sx(2))/2:(sx(0)+sx(1-e))/2,A>0?sy(-1.2):sy(1.2));
+  const r=C.r??1.5,v=Lc(r,A,e),z=zeroG(r,A,e);x.fillStyle=css("--al");x.beginPath();x.arc(sx(r),sy(v),6,0,7);x.fill();
+  $("cout").innerHTML=`<span class="k-rho">ρ = ${r.toFixed(2)}</span>, <span class="k-A">A = ${A>0?"+1":"−1"}</span> → objective ${v.toFixed(2)} · `+(z?`<span class="bad">gradient 0 (clipped)</span>`:`<span class="ok">gradient active</span>`);}
+$("clip").addEventListener("mousemove",e=>{const b=$("clip").getBoundingClientRect();C.r=clamp((e.clientX-b.left-44)/(b.width-60)*2,0.01,1.99);drawClip();});
+$("cpos").onclick=()=>{C.A=1;$("cpos").classList.add("on");$("cneg").classList.remove("on");drawClip();};
+$("cneg").onclick=()=>{C.A=-1;$("cneg").classList.add("on");$("cpos").classList.remove("on");drawClip();};
+$("ceps").oninput=e=>{C.eps=+e.target.value;$("cepsv").textContent=C.eps.toFixed(2);drawClip();};
+
+// ---------- epochs toy ----------
+const LBL=["Paris (full)","Paris.","Lyon?","As an AI…","Lyon."],REW=[1,0.8,0.4,0.2,0],INIT=[0,0,0,0.4,0.6];
+const sm=z=>{const m=Math.max(...z),e=z.map(v=>Math.exp(v-m)),s=e.reduce((a,b)=>a+b);return e.map(v=>v/s);};
+const randn=()=>Math.sqrt(-2*Math.log(Math.random()||1e-9))*Math.cos(2*Math.PI*Math.random());
+const draw=p=>{let r=Math.random(),c=0;for(let i=0;i<p.length;i++){c+=p[i];if(r<c)return i;}return p.length-1;};
+let B,S,timer;
+function newBatch(){const p=sm(INIT),ys=[],Rs=[];for(let i=0;i<16;i++){const y=draw(p);ys.push(y);Rs.push(REW[y]+0.15*randn());}const m=Rs.reduce((a,b)=>a+b)/16;B={p,ys,As:Rs.map(r=>r-m)};S={n:INIT.slice(),q:INIT.slice(),k:0};render();}
+function grad(th,ppo,e){const p=sm(th),g=[0,0,0,0,0];B.ys.forEach((y,i)=>{const A=B.As[i],rho=p[y]/B.p[y];const c=ppo?(zeroG(rho,A,e)?0:A*rho):A;for(let k=0;k<5;k++)g[k]+=c*((k===y)-p[k])/16;});return g;}
+function bars(el,th){const p=sm(th),e=+$("eeps").value;el.innerHTML=LBL.map((l,i)=>{const r=p[i]/B.p[i],bad=r>1+e+1e-9||r<1-e-1e-9;
+  return `<div class="row"><div class="lbl">${l}</div><div class="track"><div class="fill" style="width:${p[i]*100}%"></div><div class="ghost" style="left:${B.p[i]*100}%"></div></div><div class="p">${(p[i]*100).toFixed(0)}%</div><div class="${bad?"bad":"ok"}">ρ ${r.toFixed(2)}</div></div>`;}).join("");
+  const rs=p.map((v,i)=>v/B.p[i]);return `epoch ${S.k} · max ρ ${Math.max(...rs).toFixed(2)} · min ρ ${Math.min(...rs).toFixed(2)}`;}
+function render(){$("sn").textContent=bars($("bn"),S.n);$("sp").textContent=bars($("bp"),S.q);}
+$("erun").onclick=()=>{clearInterval(timer);S={n:INIT.slice(),q:INIT.slice(),k:0};render();const K=+$("eK").value,lr=+$("elr").value,e=+$("eeps").value;
+  timer=setInterval(()=>{const gn=grad(S.n,false,e),gq=grad(S.q,true,e);for(let k=0;k<5;k++){S.n[k]+=lr*gn[k];S.q[k]+=lr*gq[k];}S.k++;render();if(S.k>=K)clearInterval(timer);},260);};
+$("enew").onclick=()=>{clearInterval(timer);newBatch();};
+$("eK").oninput=e=>$("eKv").textContent=e.target.value;$("elr").oninput=e=>$("elrv").textContent=e.target.value;
+$("eeps").oninput=e=>{$("eepsv").textContent=(+e.target.value).toFixed(2);render();};
+
+window.addEventListener("load",()=>{
+  if(window.renderMathInElement) renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:true},{left:"\\(",right:"\\)",display:false}],macros:MACROS,trust:c=>c.command==="\\htmlClass",strict:"ignore",throwOnError:false});
+  else document.body.insertAdjacentHTML("afterbegin",'<div style="background:#3b1d24;padding:8px;text-align:center">Formulas need internet (KaTeX CDN). Videos and widgets still work.</div>');
+  drawClip();newBatch();addEventListener("resize",drawClip);window.__ready=true;});
+</script>
+</body>
+</html>
