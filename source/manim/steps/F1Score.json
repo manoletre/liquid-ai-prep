@@ -1,0 +1,29 @@
+{
+ "duration": 31.9,
+ "steps": [
+  {
+   "key": "why",
+   "start": 0.0,
+   "end": 8.6,
+   "hold": 2.2
+  },
+  {
+   "key": "formula",
+   "start": 8.6,
+   "end": 16.0,
+   "hold": 1.8
+  },
+  {
+   "key": "worked",
+   "start": 16.0,
+   "end": 23.7,
+   "hold": 1.8
+  },
+  {
+   "key": "fbeta",
+   "start": 23.7,
+   "end": 31.9,
+   "hold": 2.2
+  }
+ ]
+}

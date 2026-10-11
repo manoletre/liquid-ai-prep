@@ -1,0 +1,35 @@
+{
+ "duration": 26.2,
+ "steps": [
+  {
+   "key": "setup",
+   "start": 0.0,
+   "end": 5.4,
+   "hold": 1.8
+  },
+  {
+   "key": "flags",
+   "start": 5.4,
+   "end": 9.4,
+   "hold": 1.8
+  },
+  {
+   "key": "tp_fn",
+   "start": 9.4,
+   "end": 16.2,
+   "hold": 1.8
+  },
+  {
+   "key": "fp_tn",
+   "start": 16.2,
+   "end": 22.2,
+   "hold": 1.8
+  },
+  {
+   "key": "read",
+   "start": 22.2,
+   "end": 26.2,
+   "hold": 2.2
+  }
+ ]
+}

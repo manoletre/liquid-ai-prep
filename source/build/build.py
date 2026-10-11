@@ -1,7 +1,8 @@
 import json, os, subprocess, shutil, sys
 ROOT = "/workspace/ml-tutor"; REPO = "/workspace/liquid-ai-prep"
 STEPS = f"{ROOT}/manim/steps"
-VID = {"lesson01_scenes": f"{ROOT}/manim/media/videos/lesson01_scenes/1080p30", "all_scenes": f"{ROOT}/manim/media/videos/all_scenes/1080p30"}
+VID = {"lesson01_scenes": f"{ROOT}/manim/media/videos/lesson01_scenes/1080p30", "all_scenes": f"{ROOT}/manim/media/videos/all_scenes/1080p30",
+       "l3_all": f"{ROOT}/manim/media/videos/l3_all/1080p30"}
 TPL = open(f"{ROOT}/build/template.html").read()
 
 SYM_ALL = {
@@ -19,10 +20,24 @@ SYM_ALL = {
  "sigma":["σ · group std","Std of rewards inside one prompt's group (scale_rewards=\"group\")."],
  "beta":["β · KL weight","Penalty for drifting from a reference model. 0 = no reference model."],
  "H":["H · entropy","Average next-token uncertainty of the policy (nats). Lower = more peaked."],
+ "TP":["TP · true positive","Actually positive and flagged. A caught case."],
+ "FP":["FP · false positive","Actually negative but flagged. A false alarm (type I error)."],
+ "FN":["FN · false negative","Actually positive but not flagged. A miss (type II error)."],
+ "TN":["TN · true negative","Actually negative and not flagged. Correctly left alone."],
+ "prec":["P · precision","TP / (TP + FP). Of everything flagged, the share that is real."],
+ "rec":["R · recall (TPR, sensitivity)","TP / (TP + FN). Of all real positives, the share you caught."],
+ "F1":["F1 score","Harmonic mean of precision and recall: 2PR / (P + R)."],
+ "thr":["t · threshold","Flag if score ≥ t. Raising t → fewer flags → precision up, recall down."],
+ "wS":["S · substitutions","Reference word replaced by a different word."],
+ "wD":["D · deletions","Reference word missing from the ASR output."],
+ "wI":["I · insertions","Extra word in the ASR output that isn't in the reference."],
+ "wN":["N · reference length","Number of words in the reference transcript (not the hypothesis)."],
 }
 MACROS = {"\\pit":["pi","\\pi_\\theta"],"\\piold":["piold","\\pi_{\\text{old}}"],"\\X":["x","x"],"\\Y":["y","y"],"\\Rw":["R","R"],
  "\\Adv":["A","A"],"\\bb":["b","b"],"\\rr":["rho","\\rho"],"\\eps":["eps","\\epsilon"],"\\lr":["alpha","\\alpha"],"\\gmu":["mu","\\mu"],
- "\\gsig":["sigma","\\sigma"],"\\bt":["beta","\\beta"],"\\Hent":["H","H"],"\\th":["pi","\\theta"],"\\grad":[None,"\\nabla_\\theta"],"\\E":[None,"\\mathbb{E}"]}
+ "\\gsig":["sigma","\\sigma"],"\\bt":["beta","\\beta"],"\\Hent":["H","H"],"\\th":["pi","\\theta"],"\\grad":[None,"\\nabla_\\theta"],"\\E":[None,"\\mathbb{E}"],
+ "\\TP":["TP","TP"],"\\FP":["FP","FP"],"\\FN":["FN","FN"],"\\TN":["TN","TN"],"\\Prec":["prec","P"],"\\Rec":["rec","R"],"\\Fone":["F1","F_1"],
+ "\\thr":["thr","t"],"\\Sw":["wS","S"],"\\Dw":["wD","D"],"\\Iw":["wI","I"],"\\Nw":["wN","N"]}
 
 def enc(src, dst, poster_t, poster):
     subprocess.run(["ffmpeg","-v","error","-y","-i",src,"-c:v","libx264","-pix_fmt","yuv420p","-profile:v","high","-crf","23","-movflags","+faststart","-an",dst],check=True)
@@ -44,16 +59,17 @@ def build(L, outdir, encode=True):
             if rest: d["resolves"] = rest[0]
             steps.append(d)
         chapters.append({"title": c["title"], "short": c["short"], "video": f"media/{name}.mp4", "poster": f"media/{name}-poster.jpg",
-                         "steps": steps, "check": c["check"], "duration": j["duration"]})
-    data = {"id": L["id"], "hook": L["hook"], "key": L["key"], "sym": {k: SYM_ALL[k] for k in SYM_ALL}, "macros": MACROS,
+                         "steps": steps, "check": c["check"], "hook": c.get("hook"), "duration": j["duration"]})
+    data = {"id": L["id"], "hook": L.get("hook"), "drill": L.get("drill", []), "key": L["key"], "sym": {k: SYM_ALL[k] for k in SYM_ALL}, "macros": MACROS,
             "chapters": chapters, "summary": L["summary"]}
     html = TPL.replace("__TITLE__", L["title"]).replace("__H1__", L["h1"]).replace("__SUB__", L["sub"]).replace("__DATA__", json.dumps(data, ensure_ascii=False))
     open(f"{outdir}/index.html", "w").write(html)
     print("built", outdir, [len(c["steps"]) for c in chapters])
 
 sys.path.insert(0, f"{ROOT}/build")
-from content import L1, L2
+from content import L1, L2, L3
 if __name__ == "__main__":
     which = sys.argv[1:] or ["1", "2"]
     if "1" in which: build(L1, f"{REPO}/lessons/01-policy-gradient-to-ppo")
     if "2" in which: build(L2, f"{REPO}/lessons/02-explore-exploit-grpo")
+    if "3" in which: build(L3, f"{REPO}/lessons/03-evaluation-metrics")

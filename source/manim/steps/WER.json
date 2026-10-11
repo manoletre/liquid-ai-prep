@@ -1,0 +1,29 @@
+{
+ "duration": 25.9,
+ "steps": [
+  {
+   "key": "formula",
+   "start": 0.0,
+   "end": 6.0,
+   "hold": 1.8
+  },
+  {
+   "key": "align",
+   "start": 6.0,
+   "end": 11.6,
+   "hold": 1.8
+  },
+  {
+   "key": "count",
+   "start": 11.6,
+   "end": 18.3,
+   "hold": 2.2
+  },
+  {
+   "key": "notes",
+   "start": 18.3,
+   "end": 25.9,
+   "hold": 2.4
+  }
+ ]
+}

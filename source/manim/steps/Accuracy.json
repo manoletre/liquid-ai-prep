@@ -1,0 +1,29 @@
+{
+ "duration": 21.2,
+ "steps": [
+  {
+   "key": "formula",
+   "start": 0.0,
+   "end": 6.1,
+   "hold": 1.8
+  },
+  {
+   "key": "imbalance",
+   "start": 6.1,
+   "end": 10.7,
+   "hold": 1.8
+  },
+  {
+   "key": "lazy",
+   "start": 10.7,
+   "end": 16.6,
+   "hold": 1.8
+  },
+  {
+   "key": "recall0",
+   "start": 16.6,
+   "end": 21.2,
+   "hold": 2.2
+  }
+ ]
+}

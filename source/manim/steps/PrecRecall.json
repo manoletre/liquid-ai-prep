@@ -1,0 +1,41 @@
+{
+ "duration": 37.9,
+ "steps": [
+  {
+   "key": "formulas",
+   "start": 0.0,
+   "end": 8.0,
+   "hold": 1.8
+  },
+  {
+   "key": "scores",
+   "start": 8.0,
+   "end": 13.4,
+   "hold": 1.8
+  },
+  {
+   "key": "t05",
+   "start": 13.4,
+   "end": 18.7,
+   "hold": 1.8
+  },
+  {
+   "key": "t09",
+   "start": 18.7,
+   "end": 23.5,
+   "hold": 1.8
+  },
+  {
+   "key": "t025",
+   "start": 23.5,
+   "end": 28.7,
+   "hold": 1.8
+  },
+  {
+   "key": "which",
+   "start": 28.7,
+   "end": 37.9,
+   "hold": 2.2
+  }
+ ]
+}
