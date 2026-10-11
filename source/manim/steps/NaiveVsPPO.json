@@ -1,0 +1,29 @@
+{
+ "duration": 27.833,
+ "steps": [
+  {
+   "key": "setup",
+   "start": 0.0,
+   "end": 5.4,
+   "hold": 2.2
+  },
+  {
+   "key": "early",
+   "start": 5.4,
+   "end": 12.6,
+   "hold": 1.8
+  },
+  {
+   "key": "late",
+   "start": 12.6,
+   "end": 23.833,
+   "hold": 1.8
+  },
+  {
+   "key": "verdict",
+   "start": 23.833,
+   "end": 27.833,
+   "hold": 2.5
+  }
+ ]
+}

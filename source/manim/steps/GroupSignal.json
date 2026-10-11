@@ -1,0 +1,29 @@
+{
+ "duration": 32.4,
+ "steps": [
+  {
+   "key": "diverse",
+   "start": 0.0,
+   "end": 6.2,
+   "hold": 1.8
+  },
+  {
+   "key": "adv",
+   "start": 6.2,
+   "end": 11.4,
+   "hold": 2.2
+  },
+  {
+   "key": "identical",
+   "start": 11.4,
+   "end": 19.8,
+   "hold": 2.2
+  },
+  {
+   "key": "near",
+   "start": 19.8,
+   "end": 32.4,
+   "hold": 2.4
+  }
+ ]
+}

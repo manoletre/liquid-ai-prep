@@ -7,4 +7,4 @@ Personal lesson series for preparing for applied post-training roles (Liquid AI)
 | 01 | [Policy gradient → PPO → GRPO](lessons/01-policy-gradient-to-ppo/) |
 | 02 | [Explore vs exploit in GRPO](lessons/02-explore-exploit-grpo/) |
 
-Animations for lesson 01 are rendered with Manim (`source/manim`). Later lessons may use CSS/JS widgets instead.
+Animations are rendered with Manim (`source/manim/lesson_scenes.py`); each chapter records its step timestamps, and `source/build` generates the step-by-step lesson pages (`python build.py`).

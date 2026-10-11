@@ -1,0 +1,35 @@
+{
+ "duration": 29.2,
+ "steps": [
+  {
+   "key": "rewards",
+   "start": 0.0,
+   "end": 5.0,
+   "hold": 1.8
+  },
+  {
+   "key": "mean",
+   "start": 5.0,
+   "end": 10.0,
+   "hold": 1.8
+  },
+  {
+   "key": "subtract",
+   "start": 10.0,
+   "end": 14.6,
+   "hold": 1.8
+  },
+  {
+   "key": "divide",
+   "start": 14.6,
+   "end": 20.8,
+   "hold": 2.2
+  },
+  {
+   "key": "equal",
+   "start": 20.8,
+   "end": 29.2,
+   "hold": 2.5
+  }
+ ]
+}

@@ -1,0 +1,29 @@
+{
+ "duration": 29.9,
+ "steps": [
+  {
+   "key": "reward",
+   "start": 0.0,
+   "end": 6.3,
+   "hold": 1.8
+  },
+  {
+   "key": "entropy",
+   "start": 6.3,
+   "end": 12.0,
+   "hold": 1.8
+  },
+  {
+   "key": "std",
+   "start": 12.0,
+   "end": 20.4,
+   "hold": 2.2
+  },
+  {
+   "key": "beta0",
+   "start": 20.4,
+   "end": 29.9,
+   "hold": 2.2
+  }
+ ]
+}

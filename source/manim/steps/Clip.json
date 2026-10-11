@@ -1,0 +1,41 @@
+{
+ "duration": 42.8,
+ "steps": [
+  {
+   "key": "ratio",
+   "start": 0.0,
+   "end": 7.2,
+   "hold": 1.8
+  },
+  {
+   "key": "objective",
+   "start": 7.2,
+   "end": 15.4,
+   "hold": 1.8
+  },
+  {
+   "key": "apos",
+   "start": 15.4,
+   "end": 22.8,
+   "hold": 1.8
+  },
+  {
+   "key": "clip",
+   "start": 22.8,
+   "end": 29.4,
+   "hold": 1.8
+  },
+  {
+   "key": "example",
+   "start": 29.4,
+   "end": 35.6,
+   "hold": 2.2
+  },
+  {
+   "key": "aneg",
+   "start": 35.6,
+   "end": 42.8,
+   "hold": 2.2
+  }
+ ]
+}

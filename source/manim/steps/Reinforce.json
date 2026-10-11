@@ -1,0 +1,35 @@
+{
+ "duration": 49.9,
+ "steps": [
+  {
+   "key": "rule",
+   "start": 0.0,
+   "end": 10.4,
+   "hold": 1.8
+  },
+  {
+   "key": "toy",
+   "start": 10.4,
+   "end": 14.8,
+   "hold": 1.8
+  },
+  {
+   "key": "small",
+   "start": 14.8,
+   "end": 25.8,
+   "hold": 1.8
+  },
+  {
+   "key": "collapse",
+   "start": 25.8,
+   "end": 40.0,
+   "hold": 1.8
+  },
+  {
+   "key": "baseline",
+   "start": 40.0,
+   "end": 49.9,
+   "hold": 2.2
+  }
+ ]
+}
