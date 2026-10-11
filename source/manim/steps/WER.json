@@ -1,28 +1,34 @@
 {
- "duration": 25.9,
+ "duration": 34.4,
  "steps": [
   {
    "key": "formula",
    "start": 0.0,
-   "end": 6.0,
+   "end": 6.8,
    "hold": 1.8
   },
   {
    "key": "align",
-   "start": 6.0,
-   "end": 11.6,
+   "start": 6.8,
+   "end": 12.4,
    "hold": 1.8
   },
   {
    "key": "count",
-   "start": 11.6,
-   "end": 18.3,
+   "start": 12.4,
+   "end": 19.1,
+   "hold": 2.2
+  },
+  {
+   "key": "ex2",
+   "start": 19.1,
+   "end": 26.3,
    "hold": 2.2
   },
   {
    "key": "notes",
-   "start": 18.3,
-   "end": 25.9,
+   "start": 26.3,
+   "end": 34.4,
    "hold": 2.4
   }
  ]

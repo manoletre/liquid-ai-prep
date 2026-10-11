@@ -1,0 +1,41 @@
+{
+ "duration": 53.067,
+ "steps": [
+  {
+   "key": "def",
+   "start": 0.0,
+   "end": 5.8,
+   "hold": 2.0
+  },
+  {
+   "key": "ex1",
+   "start": 5.8,
+   "end": 15.7,
+   "hold": 2.0
+  },
+  {
+   "key": "stair1",
+   "start": 15.7,
+   "end": 26.7,
+   "hold": 2.4
+  },
+  {
+   "key": "ex2",
+   "start": 26.7,
+   "end": 36.467,
+   "hold": 2.0
+  },
+  {
+   "key": "stair2",
+   "start": 36.467,
+   "end": 45.967,
+   "hold": 2.4
+  },
+  {
+   "key": "random",
+   "start": 45.967,
+   "end": 53.067,
+   "hold": 2.2
+  }
+ ]
+}

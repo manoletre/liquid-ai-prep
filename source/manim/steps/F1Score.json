@@ -1,5 +1,5 @@
 {
- "duration": 31.9,
+ "duration": 62.8,
  "steps": [
   {
    "key": "why",
@@ -20,9 +20,27 @@
    "hold": 1.8
   },
   {
-   "key": "fbeta",
+   "key": "weighted",
    "start": 23.7,
-   "end": 31.9,
+   "end": 32.5,
+   "hold": 2.0
+  },
+  {
+   "key": "norm",
+   "start": 32.5,
+   "end": 42.7,
+   "hold": 2.0
+  },
+  {
+   "key": "whybeta",
+   "start": 42.7,
+   "end": 52.4,
+   "hold": 2.2
+  },
+  {
+   "key": "fex",
+   "start": 52.4,
+   "end": 62.8,
    "hold": 2.2
   }
  ]

@@ -1,8 +1,8 @@
 import json, os, subprocess, shutil, sys
 ROOT = "/workspace/ml-tutor"; REPO = "/workspace/liquid-ai-prep"
 STEPS = f"{ROOT}/manim/steps"
-VID = {"lesson01_scenes": f"{ROOT}/manim/media/videos/lesson01_scenes/1080p30", "all_scenes": f"{ROOT}/manim/media/videos/all_scenes/1080p30",
-       "l3_all": f"{ROOT}/manim/media/videos/l3_all/1080p30"}
+# Rendered 1080p30 videos live in manim/media/videos/<src>/1080p30 (src = the Manim file name without .py).
+VID = lambda src: f"{ROOT}/manim/media/videos/{src}/1080p30"
 TPL = open(f"{ROOT}/build/template.html").read()
 
 SYM_ALL = {
@@ -40,6 +40,8 @@ MACROS = {"\\pit":["pi","\\pi_\\theta"],"\\piold":["piold","\\pi_{\\text{old}}"]
  "\\thr":["thr","t"],"\\Sw":["wS","S"],"\\Dw":["wD","D"],"\\Iw":["wI","I"],"\\Nw":["wN","N"]}
 
 def enc(src, dst, poster_t, poster):
+    if os.path.exists(dst) and os.path.exists(poster) and os.path.getmtime(dst) > os.path.getmtime(src):
+        return  # already encoded from this render
     subprocess.run(["ffmpeg","-v","error","-y","-i",src,"-c:v","libx264","-pix_fmt","yuv420p","-profile:v","high","-crf","23","-movflags","+faststart","-an",dst],check=True)
     subprocess.run(["ffmpeg","-v","error","-y","-ss",str(poster_t),"-i",dst,"-frames:v","1","-vf","scale=1280:-1","-q:v","4",poster],check=True)
 
@@ -52,24 +54,28 @@ def build(L, outdir, encode=True):
         assert keys == [s[0] for s in c["steps"]], (c["scene"], keys)
         name = c["file"]
         if encode:
-            enc(f"{VID[c['src']]}/{c['scene']}.mp4", f"{outdir}/media/{name}.mp4", j["steps"][0]["end"] - 0.2, f"{outdir}/media/{name}-poster.jpg")
+            enc(f"{VID(c['src'])}/{c['scene']}.mp4", f"{outdir}/media/{name}.mp4", j["steps"][0]["end"] - 0.2, f"{outdir}/media/{name}-poster.jpg")
         steps = []
-        for (k, title, html, *rest), t in zip(c["steps"], j["steps"]):
-            d = {"key": k, "title": title, "html": html, "start": t["start"], "end": t["end"]}
-            if rest: d["resolves"] = rest[0]
-            steps.append(d)
+        for (k, title, html, *_), t in zip(c["steps"], j["steps"]):
+            steps.append({"key": k, "title": title, "html": html, "start": t["start"], "end": t["end"]})
         chapters.append({"title": c["title"], "short": c["short"], "video": f"media/{name}.mp4", "poster": f"media/{name}-poster.jpg",
                          "steps": steps, "check": c["check"], "hook": c.get("hook"), "duration": j["duration"]})
-    data = {"id": L["id"], "hook": L.get("hook"), "drill": L.get("drill", []), "key": L["key"], "sym": {k: SYM_ALL[k] for k in SYM_ALL}, "macros": MACROS,
+    for c in chapters: assert c["hook"] and c["check"], ("every chapter needs a hook (prediction) and a check (practice)", c["title"])
+    data = {"id": L["id"], "title": L["title"], "h1": L["h1"], "sub": L["sub"], "drill": L.get("drill", []), "key": L["key"], "sym": {k: SYM_ALL[k] for k in SYM_ALL}, "macros": MACROS,
             "chapters": chapters, "summary": L["summary"]}
     html = TPL.replace("__TITLE__", L["title"]).replace("__H1__", L["h1"]).replace("__SUB__", L["sub"]).replace("__DATA__", json.dumps(data, ensure_ascii=False))
     open(f"{outdir}/index.html", "w").write(html)
     print("built", outdir, [len(c["steps"]) for c in chapters])
 
 sys.path.insert(0, f"{ROOT}/build")
-from content import L1, L2, L3
+from content import LESSONS
 if __name__ == "__main__":
-    which = sys.argv[1:] or ["1", "2"]
-    if "1" in which: build(L1, f"{REPO}/lessons/01-policy-gradient-to-ppo")
-    if "2" in which: build(L2, f"{REPO}/lessons/02-explore-exploit-grpo")
-    if "3" in which: build(L3, f"{REPO}/lessons/03-evaluation-metrics")
+    # usage: python build.py 3        (build lesson 3)   |   python build.py 1 2 3
+    for n in sys.argv[1:] or list(LESSONS):
+        L = LESSONS[n]
+        build(L, f"{REPO}/lessons/{L['slug']}")
+        # drop media files that the lesson no longer uses
+        used = {f"{c['file']}{ext}" for c in L["chapters"] for ext in (".mp4", "-poster.jpg")}
+        md = f"{REPO}/lessons/{L['slug']}/media"
+        for f in os.listdir(md):
+            if f not in used: os.remove(f"{md}/{f}"); print("removed unused", f)

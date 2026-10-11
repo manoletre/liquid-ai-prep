@@ -635,98 +635,301 @@ class F1Score(StepScene):
         w2[2].set_color(C_F1)
         self.play(Write(w1), run_time=1.2); self.play(Write(w2), run_time=1.8); self.play(Write(w3), run_time=1.8)
         self.end()
-        # 4
-        self.begin("fbeta")
+        # 4 weighted harmonic mean
+        self.begin("weighted")
         self.play(FadeOut(VGroup(w1, w2, w3)), run_time=0.6)
-        fb = MathTex(r"F_\beta", r"=", r"{(1+\beta^2)\,P\,R \over \beta^2 P + R}", font_size=54).shift(UP * 1.6)
-        fb[0].set_color(C_F1)
-        self.play(Write(fb), run_time=1.8)
-        r1 = MathTex(r"\beta=2:\ F_2=0.769", r"\quad\text{(recall counts more)}", font_size=40).next_to(fb, DOWN, buff=0.7)
-        r2 = MathTex(r"\beta=0.5:\ F_{0.5}=0.690", r"\quad\text{(precision counts more)}", font_size=40).next_to(r1, DOWN, buff=0.4)
-        r1[0].set_color(C_RC); r2[0].set_color(C_P)
-        self.play(Write(r1), run_time=1.4); self.play(Write(r2), run_time=1.4)
-        self.say("same detector (P = 0.667, R = 0.80); β = 1 gives back F1")
+        h1 = MathTex(r"{1 \over F_1}", r"=", r"\tfrac12", r"\cdot{1 \over P}", r"+", r"\tfrac12", r"\cdot{1 \over R}", font_size=50).shift(UP * 2.0)
+        h1[0].set_color(C_F1); h1[3].set_color(C_P); h1[6].set_color(C_RC)
+        n1 = Text("F1: average the reciprocals with equal weights", font_size=26, color=MUTED).next_to(h1, DOWN, buff=0.3)
+        self.play(Write(h1), run_time=1.6); self.play(FadeIn(n1), run_time=0.6); self.wait(0.6)
+        h2 = MathTex(r"{1 \over F_\beta}", r"=", r"{1 \over 1+\beta^2}", r"\cdot{1 \over P}", r"+", r"{\beta^2 \over 1+\beta^2}", r"\cdot{1 \over R}", font_size=50).shift(DOWN * 0.4)
+        h2[0].set_color(C_F1); h2[3].set_color(C_P); h2[6].set_color(C_RC); h2[2].set_color(C_P); h2[5].set_color(C_RC)
+        n2 = Text("Fβ: recall's reciprocal gets β² times the weight", font_size=26, color=MUTED).next_to(h2, DOWN, buff=0.3)
+        self.play(Write(h2), run_time=2); self.play(FadeIn(n2), run_time=0.6)
+        self.say("Fβ is a weighted harmonic mean of P and R", C_F1)
+        self.end(2.0)
+        # 5 normalization
+        self.begin("norm")
+        self.unsay(); self.play(FadeOut(VGroup(h1, n1, n2)), h2.animate.shift(UP * 2.4), run_time=0.9)
+        s1 = MathTex(r"{1 \over 1+\beta^2}+{\beta^2 \over 1+\beta^2}=1", font_size=46).shift(UP * 0.6)
+        s2 = MathTex(r"P=R=x\ \Rightarrow\ {1\over F_\beta}={1\over x}\ \Rightarrow\ F_\beta=x", font_size=46).next_to(s1, DOWN, buff=0.45)
+        s3 = MathTex(r"F_\beta", r"=", r"{1+\beta^2 \over {1\over P}+{\beta^2\over R}}", r"=", r"{(1+\beta^2)\,P\,R \over \beta^2 P+R}", font_size=48).next_to(s2, DOWN, buff=0.5)
+        s3[0].set_color(C_F1); s3[4].set_color(C_F1)
+        self.play(Write(s1), run_time=1.4); self.wait(0.5); self.play(Write(s2), run_time=1.6); self.wait(0.5); self.play(Write(s3), run_time=2)
+        self.say("weights sum to 1, so P = R = x gives F = x", FG, 30)
+        self.end(2.0)
+        # 6 why beta squared
+        self.begin("whybeta")
+        self.unsay(); self.play(FadeOut(VGroup(h2, s1, s2, s3)), run_time=0.7)
+        v0 = Text("Why β² and not β?  (van Rijsbergen, 1979)", font_size=32).to_edge(UP, buff=0.6)
+        v1 = MathTex(r"{\partial F \over \partial P}\propto{1 \over (1+\beta^2)\,P^2}", r"\qquad", r"{\partial F \over \partial R}\propto{\beta^2 \over (1+\beta^2)\,R^2}", font_size=44).shift(UP * 1.0)
+        v1[0].set_color(C_P); v1[2].set_color(C_RC)
+        v2 = MathTex(r"\text{equal gain from a small bump in } P \text{ or } R \iff {R^2 \over P^2}=\beta^2 \iff {R \over P}=\beta", font_size=40).next_to(v1, DOWN, buff=0.6)
+        v3 = Text("F2: precision only starts to pay as much as recall once R = 2·P.\nIn that sense recall is “β times as important”.", font_size=27, color=FG, line_spacing=1.2).next_to(v2, DOWN, buff=0.6)
+        self.play(FadeIn(v0), run_time=0.8); self.play(Write(v1), run_time=2); self.wait(0.5); self.play(Write(v2), run_time=2); self.play(FadeIn(v3), run_time=1)
+        self.end(2.2)
+        # 7 worked example
+        self.begin("fex")
+        self.play(FadeOut(VGroup(v0, v1, v2, v3)), run_time=0.7)
+        e0 = MathTex(r"P=0.5,\quad R=1.0", font_size=48).to_edge(UP, buff=0.7)
+        e0[0][0:5].set_color(C_P); e0[0][6:].set_color(C_RC)
+        e1 = MathTex(r"F_1", r"={2\cdot0.5\cdot1 \over 0.5+1}={1\over1.5}=", r"0.67", font_size=44)
+        e2 = MathTex(r"F_2", r"={5\cdot0.5\cdot1 \over 4\cdot0.5+1}={2.5\over3}=", r"0.83", font_size=44)
+        e3 = MathTex(r"F_{0.5}", r"={1.25\cdot0.5\cdot1 \over 0.25\cdot0.5+1}={0.625\over1.125}=", r"0.56", font_size=44)
+        eg = VGroup(e1, e2, e3).arrange(DOWN, buff=0.45, aligned_edge=LEFT).next_to(e0, DOWN, buff=0.6)
+        for e, c in ((e1, C_F1), (e2, C_RC), (e3, C_P)):
+            e[0].set_color(c); e[2].set_color(c)
+        self.play(Write(e0), run_time=1)
+        for e in eg:
+            self.play(Write(e), run_time=1.6); self.wait(0.3)
+        self.say("recall is the strong side here, so F2 > F1 > F0.5")
         self.end(2.2)
 
-# ---------------------------------------------------------------- L3 Ch5
-class RocPr(StepScene):
+# ---------------------------------------------------------------- L3 Ch5: AUROC by hand
+def pair_grid(pos, neg, cw, ch, origin):
+    """Grid whose geometry equals the ROC unit square: columns = negatives (high→low, left→right),
+    rows = positives (high→low, bottom→top). Cell value = 1 if pos > neg, 0.5 if tie, 0 otherwise."""
+    cells = {}; g = VGroup()
+    for i, p in enumerate(pos):
+        for j, n in enumerate(neg):
+            r = Rectangle(width=cw, height=ch, stroke_color=MUTED, stroke_width=2, fill_opacity=0).move_to(origin + RIGHT * (j + 0.5) * cw + UP * (i + 0.5) * ch)
+            v = 1 if p > n else (0.5 if p == n else 0)
+            cells[(i, j)] = (r, v); g.add(r)
+    rl = VGroup(*[Text(f"+{p}", font_size=26, color=C_TP).next_to(cells[(i, 0)][0], LEFT, buff=0.2) for i, p in enumerate(pos)])
+    cl = VGroup(*[Text(f"−{n}", font_size=26, color=C_FP).next_to(cells[(0, j)][0], DOWN, buff=0.2) for j, n in enumerate(neg)])
+    return g, cells, rl, cl
+
+def val_txt(v):
+    return {1: ("1", C_GOOD), 0: ("0", C_BAD), 0.5: ("½", C_AL)}[v]
+
+class Auroc(StepScene):
+    def show_pairs(self, pos, neg, cw, ch, origin, total_tex):
+        g, cells, rl, cl = pair_grid(pos, neg, cw, ch, origin)
+        hdr = VGroup(Text("positives (+): " + ", ".join(map(str, pos)), font_size=28, color=C_TP),
+                     Text("negatives (−): " + ", ".join(map(str, neg)), font_size=28, color=C_FP)).arrange(DOWN, aligned_edge=LEFT, buff=0.15).to_edge(UP, buff=0.4)
+        self.play(FadeIn(hdr), run_time=0.8)
+        self.play(Create(g), FadeIn(rl), FadeIn(cl), run_time=1.2)
+        lst = VGroup(); vals = VGroup()
+        for i, p in enumerate(pos):
+            for j, n in enumerate(neg):
+                r, v = cells[(i, j)]; t, c = val_txt(v)
+                vt = Text(t, font_size=34, color=c).move_to(r)
+                rel = ">" if p > n else ("=" if p == n else "<")
+                line = Text(f"({p}, {n}):  {p} {rel} {n}  →  {t}", font_size=24, color=c)
+                lst.add(line); vals.add(vt)
+        lst.arrange(DOWN, aligned_edge=LEFT, buff=0.13).move_to(RIGHT * 3.6 + UP * 0.6)
+        for vt, line in zip(vals, lst):
+            self.play(FadeIn(vt), FadeIn(line, shift=RIGHT * 0.15), run_time=0.55)
+        tot = MathTex(total_tex, font_size=40).next_to(lst, DOWN, buff=0.45)
+        self.play(Write(tot), run_time=1.4)
+        return VGroup(hdr, g, rl, cl, vals), lst, tot, cells
+
+    def stair(self, pos, neg, cw, ch, origin, cells, grid_stuff):
+        P, N = len(pos), len(neg)
+        ax = Axes(x_range=[0, 1, 1 / N], y_range=[0, 1, 1 / P], x_length=N * cw, y_length=P * ch, axis_config={"color": MUTED, "include_tip": False}).move_to(origin + RIGHT * N * cw / 2 + UP * P * ch / 2)
+        xl = Text("FPR (right 1/N per −)", font_size=22, color=C_FP).next_to(ax.x_axis, DOWN, buff=0.75)
+        yl = Text("TPR (up 1/P per +)", font_size=22, color=C_RC).next_to(ax.y_axis, UP, buff=0.2)
+        self.play(Create(ax), FadeIn(xl), FadeIn(yl), run_time=1)
+        items = sorted([(p, 1) for p in pos] + [(n, 0) for n in neg], key=lambda t: (-t[0], -t[1]))
+        # group ties
+        groups = []
+        for sc, y in items:
+            if groups and groups[-1][0] == sc: groups[-1][1].append(y)
+            else: groups.append((sc, [y]))
+        x = y0 = 0.0; path = VGroup(); seqtxt = []
+        for sc, ys in groups:
+            dx = ys.count(0) / N; dy = ys.count(1) / P
+            seg = Line(ax.c2p(x, y0), ax.c2p(x + dx, y0 + dy), color=C_RC, stroke_width=6)
+            path.add(seg); self.play(Create(seg), run_time=0.6)
+            x += dx; y0 += dy
+            seqtxt.append(f"{sc}" + "".join("+" if t else "−" for t in ys))
+        fills = VGroup()
+        for (i, j), (r, v) in cells.items():
+            if v == 1:
+                fills.add(r.copy().set_fill(C_RC, 0.28).set_stroke(width=0))
+            elif v == 0.5:
+                bl = r.get_corner(DL); br = r.get_corner(DR); tl = r.get_corner(UL); tr = r.get_corner(UR)
+                fills.add(Polygon(bl, br, tr, stroke_width=0, fill_color=C_RC, fill_opacity=0.28))
+        self.play(FadeIn(fills), run_time=1.2)
+        return VGroup(ax, xl, yl, path, fills), " ".join(seqtxt)
+
     def construct(self):
-        # 1
-        self.begin("rates")
-        tpr = MathTex(r"\text{TPR}", r"=", r"{TP \over TP+FN}", r"=\text{recall}", font_size=46)
-        fpr = MathTex(r"\text{FPR}", r"=", r"{FP \over FP+TN}", font_size=46)
-        tpr[0].set_color(C_RC); fpr[0].set_color(C_FP)
-        VGroup(tpr, fpr).arrange(DOWN, buff=0.6, aligned_edge=LEFT).shift(UP * 0.6)
-        self.play(Write(tpr), run_time=1.5); self.play(Write(fpr), run_time=1.5)
-        self.say("share of positives caught vs share of negatives falsely flagged")
-        self.end()
-        # 2
-        self.begin("sweep")
-        self.play(FadeOut(tpr), FadeOut(fpr), run_time=0.6); self.unsay()
-        ax = Axes(x_range=[0, 1, 0.2], y_range=[0, 1, 0.2], x_length=5.4, y_length=5.0, axis_config={"color": MUTED, "include_tip": False, "font_size": 22},
-                  x_axis_config={"numbers_to_include": [0.2, 0.4, 0.6, 0.8, 1.0]}, y_axis_config={"numbers_to_include": [0.2, 0.4, 0.6, 0.8, 1.0]}).shift(LEFT * 2.6 + UP * 0.1)
-        xl = Text("FPR", font_size=26, color=C_FP).next_to(ax.x_axis, DOWN, buff=0.45)
-        yl = Text("TPR", font_size=26, color=C_RC).next_to(ax.y_axis, UP, buff=0.15)
-        diag = DashedLine(ax.c2p(0, 0), ax.c2p(1, 1), color=MUTED)
-        dl = Text("random", font_size=22, color=MUTED).move_to(ax.c2p(0.72, 0.6)).rotate(PI / 4)
-        self.play(Create(ax), FadeIn(xl), FadeIn(yl), Create(diag), FadeIn(dl), run_time=1.4)
-        seq = sorted([(s, 1) for s in POS] + [(s, 0) for s in NEG], reverse=True)
-        pts = [(0.0, 0.0)]; tp = fp = 0
-        for s, y in seq:
-            tp += y; fp += 1 - y; pts.append((fp / 5, tp / 5))
-        info = Text("sweep the threshold from high to low:\nevery + moves the curve up,\nevery − moves it right", font_size=26, color=FG, line_spacing=1.2).move_to(RIGHT * 3.6 + UP * 0.8)
-        self.play(FadeIn(info), run_time=0.8)
-        curve = VGroup()
-        for a, b in zip(pts, pts[1:]):
-            seg = Line(ax.c2p(*a), ax.c2p(*b), color=C_RC, stroke_width=5); curve.add(seg)
-            self.play(Create(seg), run_time=0.45)
-        self.end()
-        # 3
-        self.begin("auc")
-        area = VGroup()
-        for a, b in zip(pts, pts[1:]):
-            if b[0] > a[0]:
-                area.add(Polygon(ax.c2p(a[0], 0), ax.c2p(b[0], 0), ax.c2p(b[0], b[1]), ax.c2p(a[0], a[1]), stroke_width=0, fill_color=C_RC, fill_opacity=0.25))
-        self.play(FadeIn(area), FadeOut(info), run_time=1.2)
-        a1 = MathTex(r"\text{AUROC}=0.76", font_size=48, color=C_RC).move_to(RIGHT * 3.6 + UP * 1.4)
-        a2 = Text("= P(random + scores above random −)", font_size=24).next_to(a1, DOWN, buff=0.35)
-        a3 = MathTex(r"{19 \text{ of } 25 \text{ pairs}}", font_size=40).next_to(a2, DOWN, buff=0.35)
-        a4 = Text("0.5 = random · 1.0 = perfect ranking", font_size=24, color=MUTED).next_to(a3, DOWN, buff=0.45)
-        self.play(Write(a1), run_time=1); self.play(FadeIn(a2), run_time=0.8); self.play(Write(a3), run_time=1); self.play(FadeIn(a4), run_time=0.8)
-        self.end(2.2)
-        # 4
-        self.begin("imbalance")
+        # 1 definition
+        self.begin("def")
+        d1 = Text("AUROC = probability that a random positive\nscores higher than a random negative", font_size=34, line_spacing=1.2).shift(UP * 1.4)
+        d2 = MathTex(r"\text{AUROC}=", r"{\#\{\text{pairs with } s_+ > s_-\} + \tfrac12\,\#\{\text{ties}\}", r"\over", r"P\cdot N}", font_size=46).shift(DOWN * 0.6)
+        d2[0].set_color(C_RC)
+        self.play(FadeIn(d1), run_time=1); self.play(Write(d2), run_time=2)
+        self.say("compare every positive with every negative: P × N pairs")
+        self.end(2.0)
+        # 2 example 1
+        self.begin("ex1")
+        self.unsay(); self.play(FadeOut(d1), FadeOut(d2), run_time=0.6)
+        pos1, neg1 = [0.9, 0.6], [0.7, 0.3, 0.2]; cw, ch = 1.25, 1.25; o1 = LEFT * 5.0 + DOWN * 1.6
+        stuff1, lst1, tot1, cells1 = self.show_pairs(pos1, neg1, cw, ch, o1, r"{1+1+1+0+1+1 \over 2\times3}={5\over6}\approx0.83")
+        self.end(2.0)
+        # 3 staircase = pairs
+        self.begin("stair1")
+        self.play(FadeOut(lst1), tot1.animate.to_edge(RIGHT, buff=0.6).shift(UP * 1.6 - tot1.get_y() * UP), run_time=0.8)
+        st1, seq1 = self.stair(pos1, neg1, cw, ch, o1, cells1, stuff1)
+        e1 = Text("sorted by score:\n0.9+ ↑   0.7− →   0.6+ ↑   0.3− →   0.2− →", font_size=24, line_spacing=1.2).move_to(RIGHT * 3.2 + UP * 0.1)
+        e2 = Text("each shaded cell is one correct pair,\neach cell has area 1/(P·N) = 1/6\n→ area under the staircase = 5/6", font_size=26, line_spacing=1.2).next_to(e1, DOWN, buff=0.45).set_x(3.2)
+        self.play(FadeIn(e1), run_time=0.8); self.play(FadeIn(e2), run_time=1)
+        self.say("counting correct pairs = area under the ROC staircase", C_RC)
+        self.end(2.4)
+        # 4 example 2 with a tie
+        self.begin("ex2")
+        self.unsay(); self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.8)
+        pos2, neg2 = [0.8, 0.4], [0.4, 0.1]; o2 = LEFT * 5.0 + DOWN * 1.6; cw2 = ch2 = 1.5
+        stuff2, lst2, tot2, cells2 = self.show_pairs(pos2, neg2, cw2, ch2, o2, r"{1+1+\tfrac12+1 \over 2\times2}={3.5\over4}=0.875")
+        self.say("a tie (0.4 vs 0.4) counts as ½", C_AL)
+        self.end(2.0)
+        # 5 tie on the staircase
+        self.begin("stair2")
+        self.unsay(); self.play(FadeOut(lst2), tot2.animate.to_edge(RIGHT, buff=0.6).shift(UP * 1.6 - tot2.get_y() * UP), run_time=0.8)
+        st2, seq2 = self.stair(pos2, neg2, cw2, ch2, o2, cells2, stuff2)
+        f1 = Text("sorted by score:\n0.8+ ↑   {0.4+, 0.4−} ↗   0.1− →", font_size=24, line_spacing=1.2).move_to(RIGHT * 3.2 + UP * 0.1)
+        f2 = Text("a tied + and − move up and right at once:\nthe diagonal cuts that cell in half → ½", font_size=26, line_spacing=1.2).next_to(f1, DOWN, buff=0.45).set_x(3.2)
+        self.play(FadeIn(f1), run_time=0.8); self.play(FadeIn(f2), run_time=1)
+        self.end(2.4)
+        # 6 random / perfect
+        self.begin("random")
         self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.8)
-        t = Text("Rare positives: 1% of 10,000 (fraud, escalations)", font_size=32).to_edge(UP, buff=0.6)
-        l1 = MathTex(r"\text{ROC point: }", r"\text{TPR}=0.90", r",\ ", r"\text{FPR}=0.05", r"\quad\text{(looks great)}", font_size=42).shift(UP * 1.2)
-        l1[1].set_color(C_RC); l1[3].set_color(C_FP)
-        l2 = MathTex(r"TP = 0.90\times100 = 90", r"\qquad", r"FP = 0.05\times 9900 = 495", font_size=42).next_to(l1, DOWN, buff=0.6)
-        l2[0].set_color(C_TP); l2[2].set_color(C_FP)
-        l3 = MathTex(r"\text{precision}={90 \over 90+495}", r"=", r"0.15", font_size=48).next_to(l2, DOWN, buff=0.6)
-        l3[2].set_color(C_BAD)
-        self.play(FadeIn(t), run_time=0.8); self.play(Write(l1), run_time=1.5); self.play(Write(l2), run_time=1.8); self.play(Write(l3), run_time=1.5)
-        self.say("FPR hides 495 false alarms behind 9,900 negatives", C_BAD)
+        r1 = VGroup(Text("all + ranked above all −  →  every cell shaded  →  AUROC = 1.0", font_size=28, color=C_GOOD),
+                    Text("random scores  →  staircase hugs the diagonal  →  AUROC ≈ 0.5", font_size=28, color=FG),
+                    Text("AUROC < 0.5  →  ranking is inverted: flip the scores (0.3 → 0.7)", font_size=28, color=C_BAD)).arrange(DOWN, aligned_edge=LEFT, buff=0.5)
+        for r in r1:
+            self.play(FadeIn(r, shift=RIGHT * 0.2), run_time=0.8); self.wait(0.3)
+        self.say("AUROC only cares about the ranking, not a threshold")
         self.end(2.2)
-        # 5
-        self.begin("pr")
-        self.unsay(); self.play(FadeOut(VGroup(t, l1, l2, l3)), run_time=0.7)
-        ax2 = Axes(x_range=[0, 1, 0.2], y_range=[0, 1, 0.2], x_length=5.4, y_length=4.5, axis_config={"color": MUTED, "include_tip": False, "font_size": 22},
-                   x_axis_config={"numbers_to_include": [0.2, 0.4, 0.6, 0.8, 1.0]}, y_axis_config={"numbers_to_include": [0.2, 0.4, 0.6, 0.8, 1.0]}).shift(LEFT * 2.6 + UP * 0.4)
-        xl2 = Text("recall", font_size=26, color=C_RC).next_to(ax2.x_axis, DOWN, buff=0.45)
-        yl2 = Text("precision", font_size=26, color=C_P).next_to(ax2.y_axis, UP, buff=0.2)
-        self.play(Create(ax2), FadeIn(xl2), FadeIn(yl2), run_time=1.2)
-        prp = []; tp = fp = 0
-        for s, y in seq:
-            tp += y; fp += 1 - y; prp.append((tp / 5, tp / (tp + fp)))
-        dots = VGroup(*[Dot(ax2.c2p(*p), color=C_P, radius=0.07) for p in prp])
-        path = VMobject(color=C_P, stroke_width=4).set_points_as_corners([ax2.c2p(*p) for p in prp])
-        base = DashedLine(ax2.c2p(0, 0.5), ax2.c2p(1, 0.5), color=MUTED)
-        bl = Text("baseline = prevalence (0.5 here)", font_size=22, color=MUTED).next_to(ax2.c2p(0.5, 0.5), DOWN, buff=0.15)
-        self.play(Create(path), FadeIn(dots), run_time=2)
-        self.play(Create(base), FadeIn(bl), run_time=1)
-        txt = Text("PR curve: precision at every recall.\nRandom = prevalence (1% for rare\nevents), so PR-AUC exposes\nfalse alarms that ROC hides.", font_size=26, line_spacing=1.2).move_to(RIGHT * 3.7)
-        self.play(FadeIn(txt), run_time=1)
-        self.say("rare positives → prefer PR-AUC", C_P, 30)
+
+# ---------------------------------------------------------------- L3 Ch6: PR vs ROC
+class PrRoc(StepScene):
+    def construct(self):
+        mk = lambda: Axes(x_range=[0, 1, 0.5], y_range=[0, 1, 0.5], x_length=4.4, y_length=3.6, axis_config={"color": MUTED, "include_tip": False, "font_size": 22},
+                          x_axis_config={"numbers_to_include": [0.5, 1.0]}, y_axis_config={"numbers_to_include": [0.5, 1.0]})
+        # 1 what each plots
+        self.begin("axes")
+        a1 = mk().move_to(LEFT * 3.4 + UP * 1.1); a2 = mk().move_to(RIGHT * 3.0 + UP * 1.1)
+        t1 = Text("ROC", font_size=32, color=C_RC).next_to(a1, UP, buff=0.3); t2 = Text("PR", font_size=32, color=C_P).next_to(a2, UP, buff=0.3)
+        x1 = Text("FPR", font_size=24, color=C_FP).next_to(a1.x_axis, DOWN, buff=0.45); y1 = Text("TPR", font_size=24, color=C_RC).next_to(a1.y_axis, LEFT, buff=0.35)
+        x2 = Text("recall", font_size=24, color=C_RC).next_to(a2.x_axis, DOWN, buff=0.45); y2 = Text("precision", font_size=24, color=C_P).rotate(PI / 2).next_to(a2.y_axis, LEFT, buff=0.35)
+        d1 = MathTex(r"\text{TPR}={TP\over TP+FN},\ \text{FPR}={FP\over FP+TN}", font_size=34).next_to(x1, DOWN, buff=0.35)
+        d2 = MathTex(r"P={TP\over TP+FP},\ R={TP\over TP+FN}", font_size=34).next_to(x2, DOWN, buff=0.35)
+        self.play(Create(a1), FadeIn(t1), FadeIn(x1), FadeIn(y1), run_time=1.2); self.play(Write(d1), run_time=1.4)
+        self.play(Create(a2), FadeIn(t2), FadeIn(x2), FadeIn(y2), run_time=1.2); self.play(Write(d2), run_time=1.4)
+        self.say("both sweep the threshold; PR never uses TN")
+        self.end(2.0)
+        # 2 random baselines
+        self.begin("baselines")
+        self.unsay()
+        r1 = DashedLine(a1.c2p(0, 0), a1.c2p(1, 1), color=MUTED)
+        l1 = Text("random: AUROC = 0.5\nat any prevalence", font_size=22, color=MUTED, line_spacing=1.1).move_to(a1.c2p(0.66, 0.3))
+        r2 = DashedLine(a2.c2p(0, 0.5), a2.c2p(1, 0.5), color=MUTED); r3 = DashedLine(a2.c2p(0, 0.02), a2.c2p(1, 0.02), color=C_BAD)
+        l2 = Text("random, prevalence 50% → 0.5", font_size=20, color=MUTED).next_to(a2.c2p(0.5, 0.5), UP, buff=0.1)
+        l3 = Text("random, prevalence 1% → 0.01", font_size=20, color=C_BAD).next_to(a2.c2p(0.5, 0.02), UP, buff=0.1)
+        self.play(Create(r1), FadeIn(l1), run_time=1.2); self.wait(0.4)
+        self.play(Create(r2), FadeIn(l2), run_time=1); self.play(Create(r3), FadeIn(l3), run_time=1)
+        self.say("PR's random baseline = prevalence (share of positives)", C_P)
+        self.end(2.2)
+        # 3 rare positives
+        self.begin("rare")
+        self.unsay(); self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.8)
+        q0 = Text("100 positives in 100,000 (so 99,900 negatives)", font_size=32).to_edge(UP, buff=0.6)
+        q1 = MathTex(r"\text{FPR}=1\%:\quad FP=0.01\times99{,}900=999\approx1{,}000", font_size=44).shift(UP * 1.2)
+        q2 = MathTex(r"\text{even catching all 100 (TPR}=1):\quad TP=100", font_size=40).next_to(q1, DOWN, buff=0.5)
+        q3 = MathTex(r"\text{precision}={100\over100+999}", r"\approx", r"0.09", font_size=48).next_to(q2, DOWN, buff=0.5)
+        q3[2].set_color(C_BAD); q1[0][0:7].set_color(C_FP)
+        q4 = Text("on ROC this point (FPR 0.01, TPR 1.0) looks nearly perfect", font_size=26, color=MUTED).next_to(q3, DOWN, buff=0.5)
+        self.play(FadeIn(q0), run_time=0.8); self.play(Write(q1), run_time=1.8); self.play(Write(q2), run_time=1.4); self.play(Write(q3), run_time=1.4); self.play(FadeIn(q4), run_time=0.8)
+        self.say("1% of a huge negative pool swamps 100 positives: precision ≤ 9%", C_BAD, 28)
+        self.end(2.4)
+        # 4 which to report
+        self.begin("which")
+        self.unsay(); self.play(*[FadeOut(m) for m in self.mobjects], run_time=0.8)
+        rows = [("", "AUROC", "PR-AUC"), ("plots", "TPR vs FPR", "precision vs recall"), ("random", "0.5", "prevalence"),
+                ("uses TN?", "yes (via FPR)", "no"), ("use when", "ranking, balanced-ish", "positives are rare")]
+        tbl = VGroup()
+        for r, row in enumerate(rows):
+            for c, txt in enumerate(row):
+                col = [MUTED, C_RC, C_P][c] if r == 0 or c == 0 else FG
+                tbl.add(Text(txt, font_size=27, color=col).move_to([-4.8 + c * 4.3, 2.0 - r * 0.9, 0]))
+        self.play(LaggedStart(*[FadeIn(t) for t in tbl], lag_ratio=0.08), run_time=2.4)
+        self.say("rare positives → PR-AUC + precision/recall at your threshold", C_P, 28)
+        self.end(2.4)
+
+# ---------------------------------------------------------------- L3 Ch7: Levenshtein
+def lev_table(a, b):
+    D = [[0] * (len(b) + 1) for _ in range(len(a) + 1)]
+    for i in range(len(a) + 1): D[i][0] = i
+    for j in range(len(b) + 1): D[0][j] = j
+    for i in range(1, len(a) + 1):
+        for j in range(1, len(b) + 1):
+            D[i][j] = min(D[i - 1][j] + 1, D[i][j - 1] + 1, D[i - 1][j - 1] + (a[i - 1] != b[j - 1]))
+    return D
+
+class Levenshtein(StepScene):
+    def construct(self):
+        A, B = "kitten", "sitting"; D = lev_table(A, B); cs = 0.56
+        # 1 definition
+        self.begin("def")
+        h = Text("Levenshtein distance", font_size=38, color=C_F1).to_edge(UP, buff=0.5)
+        dd = Text("the minimum number of single-character edits\n(insert, delete, substitute) that turn one string into another", font_size=28, line_spacing=1.2).next_to(h, DOWN, buff=0.4)
+        self.play(FadeIn(h), FadeIn(dd), run_time=1.2)
+        steps = [("kitten", ""), ("sitten", "k → s  (substitute)"), ("sittin", "e → i  (substitute)"), ("sitting", "+ g  (insert)")]
+        col = [FG, C_FP, C_FP, C_RC]
+        lines = VGroup(*[VGroup(Text(w, font_size=34, color=FG), Text(n, font_size=26, color=c)).arrange(RIGHT, buff=0.6) for (w, n), c in zip(steps, col)]).arrange(DOWN, aligned_edge=LEFT, buff=0.3).shift(DOWN * 0.9)
+        for l in lines:
+            self.play(FadeIn(l, shift=RIGHT * 0.15), run_time=0.7)
+        self.say("kitten → sitting: 3 edits, and no shorter route exists")
+        self.end(2.0)
+        # 2 DP table + base cases
+        self.begin("table")
+        self.unsay(); self.play(FadeOut(VGroup(h, dd, lines)), run_time=0.7)
+        o = LEFT * 6.3 + UP * 2.4
+        pos = lambda i, j: o + RIGHT * (j + 1) * cs + DOWN * (i + 1) * cs  # i rows (kitten), j cols (sitting)
+        hdr = VGroup(*[Text(ch, font_size=26, color=C_RC).move_to(pos(-1, j + 1)) for j, ch in enumerate(B)], Text("∅", font_size=24, color=MUTED).move_to(pos(-1, 0)),
+                     *[Text(ch, font_size=26, color=C_P).move_to(pos(i + 1, -1)) for i, ch in enumerate(A)], Text("∅", font_size=24, color=MUTED).move_to(pos(0, -1)))
+        grid = VGroup(*[Square(cs, stroke_color=GRID, stroke_width=1.5).move_to(pos(i, j)) for i in range(len(A) + 1) for j in range(len(B) + 1)])
+        num = {}
+        for i in range(len(A) + 1):
+            for j in range(len(B) + 1):
+                num[(i, j)] = Text(str(D[i][j]), font_size=24, color=FG).move_to(pos(i, j))
+        base = VGroup(*[num[(0, j)] for j in range(len(B) + 1)], *[num[(i, 0)] for i in range(1, len(A) + 1)])
+        self.play(FadeIn(hdr), Create(grid), run_time=1.2)
+        bt = Text("cell (i, j) = distance between the first i letters\nof kitten and the first j letters of sitting", font_size=22, line_spacing=1.2).move_to(RIGHT * 3.4 + UP * 2.0)
+        bt2 = Text("first row / column: turning a prefix into the\nempty string (∅) costs its length: 0, 1, 2, …", font_size=22, color=MUTED, line_spacing=1.2).next_to(bt, DOWN, buff=0.4)
+        self.play(FadeIn(bt), run_time=0.8); self.play(LaggedStart(*[FadeIn(n) for n in base], lag_ratio=0.08), FadeIn(bt2), run_time=1.6)
+        self.end(2.0)
+        # 3 recurrence + fill
+        self.begin("fill")
+        rec = MathTex(r"D[i][j]=\min\begin{cases}D[i-1][j]+1 & \text{del}\\ D[i][j-1]+1 & \text{ins}\\ D[i-1][j-1]+[a_i\ne b_j] & \text{sub/match}\end{cases}", font_size=34).move_to(RIGHT * 3.4 + DOWN * 0.3)
+        rec.scale_to_fit_width(min(rec.width, 6.0)).set_x(3.4)
+        self.play(FadeOut(bt2), Write(rec), run_time=2)
+        ex = Text("(1,1): k vs s → min(1+1, 1+1, 0+1) = 1", font_size=24, color=C_AL).next_to(rec, DOWN, buff=0.4)
+        box = SurroundingRectangle(num[(1, 1)], color=C_AL, buff=0.06)
+        nb = VGroup(SurroundingRectangle(num[(0, 0)], color=MUTED, buff=0.04), SurroundingRectangle(num[(0, 1)], color=MUTED, buff=0.04), SurroundingRectangle(num[(1, 0)], color=MUTED, buff=0.04))
+        self.play(Create(nb), Create(box), FadeIn(ex), run_time=1); self.play(FadeIn(num[(1, 1)]), run_time=0.6); self.wait(0.6)
+        self.play(FadeOut(nb), FadeOut(box), run_time=0.4)
+        for i in range(1, len(A) + 1):
+            row = [num[(i, j)] for j in range(1, len(B) + 1) if (i, j) != (1, 1)]
+            self.play(LaggedStart(*[FadeIn(n) for n in row], lag_ratio=0.12), run_time=0.9)
+        self.end(2.0)
+        # 4 answer + path
+        self.begin("path")
+        self.play(FadeOut(ex), run_time=0.4)
+        i, j = len(A), len(B); path = [(i, j)]
+        while i > 0 or j > 0:
+            if i > 0 and j > 0 and D[i][j] == D[i - 1][j - 1] + (A[i - 1] != B[j - 1]): i, j = i - 1, j - 1
+            elif j > 0 and D[i][j] == D[i][j - 1] + 1: j -= 1
+            else: i -= 1
+            path.append((i, j))
+        hl = VGroup(*[Square(cs * 0.9, stroke_width=0, fill_color=C_F1, fill_opacity=0.25).move_to(pos(a, b)) for a, b in path])
+        self.play(FadeIn(hl), run_time=1.4)
+        ans = SurroundingRectangle(num[(len(A), len(B))], color=C_F1, buff=0.05)
+        res = Text("bottom-right cell: distance = 3", font_size=26, color=C_F1).next_to(rec, DOWN, buff=0.45)
+        self.play(Create(ans), FadeIn(res), run_time=1)
+        self.say("diagonal = match or substitute, → = insert, ↓ = delete")
         self.end(2.4)
 
 # ---------------------------------------------------------------- L3 Ch6
@@ -737,6 +940,8 @@ class WER(StepScene):
         # 1
         self.begin("formula")
         self.play(Write(f), run_time=1.8)
+        lv = Text("= word-level Levenshtein distance ÷ words in the reference", font_size=28, color=C_F1).next_to(f, DOWN, buff=0.35)
+        self.play(FadeIn(lv), run_time=0.8)
         leg = VGroup(Text("S substitutions (wrong word)", font_size=28, color=C_FP), Text("D deletions (missing word)", font_size=28, color=C_FN),
                      Text("I insertions (extra word)", font_size=28, color=C_RC), Text("N words in the reference", font_size=28, color=FG)).arrange(DOWN, aligned_edge=LEFT, buff=0.25).shift(DOWN * 0.6)
         for l in leg:
@@ -744,7 +949,7 @@ class WER(StepScene):
         self.end()
         # 2
         self.begin("align")
-        self.play(FadeOut(leg), run_time=0.6)
+        self.play(FadeOut(leg), FadeOut(lv), run_time=0.6)
         ref = ["i", "need", "to", "refill", "my", "prescription", ""]
         hyp = ["", "need", "to", "refill", "the", "prescription", "today"]
         ops = ["D", "", "", "", "S", "", "I"]
@@ -778,11 +983,28 @@ class WER(StepScene):
         res[1].set_color(C_FP); res[3].set_color(C_FN); res[5].set_color(C_RC); res[9].set_color(C_F1)
         self.unsay(); self.play(Write(res), run_time=1.6)
         self.end(2.2)
-        # 4
+        # 4 edge case: insertions
+        self.begin("ex2")
+        self.play(*[FadeOut(m) for m in self.mobjects if m is not f], run_time=0.8)
+        g1 = VGroup(Text("reference", font_size=24, color=MUTED), Text("yes", font_size=32), Text("—", font_size=32, color=C_RC), Text("—", font_size=32, color=C_RC))
+        g2 = VGroup(Text("ASR output", font_size=24, color=MUTED), Text("yes", font_size=32), Text("yes", font_size=32, color=C_RC), Text("okay", font_size=32, color=C_RC))
+        for k, (u, v) in enumerate(zip(g1, g2)):
+            x = -3.6 + k * 2.0 if k else -4.4
+            u.move_to([x, 0.9, 0]); v.move_to([x, -0.1, 0])
+        self.play(FadeIn(g1), FadeIn(g2), run_time=1.2)
+        tg = VGroup(*[Text("I", font_size=28, color=C_RC).move_to([-3.6 + k * 2.0, -0.8, 0]) for k in (2, 3)])
+        self.play(FadeIn(tg), run_time=0.8)
+        r2 = MathTex(r"\text{WER}={0+0+2 \over 1}=", r"200\%", font_size=52).shift(DOWN * 2.0)
+        r2[1].set_color(C_BAD)
+        self.play(Write(r2), run_time=1.4)
+        self.say("N counts reference words only, so insertions can push WER past 100%", C_BAD, 28)
+        self.end(2.2)
+        # 5
         self.begin("notes")
+        self.unsay()
         self.play(*[FadeOut(m) for m in self.mobjects if m is not f], run_time=0.8)
         rows = VGroup(
-            Text("• N counts reference words only, so insertions can push WER above 100%", font_size=27),
+            Text("• WER = 0 is perfect, but there's no upper bound of 100%", font_size=27),
             Text("• normalize first: case, punctuation, “10” vs “ten”", font_size=27),
             Text("• one wrong word can matter far more than the score shows:", font_size=27),
             Text("   “take 15 mg” → “take 50 mg” is still just 1 substitution", font_size=27, color=C_FP),
