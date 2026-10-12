@@ -1,0 +1,29 @@
+{
+ "duration": 20.8,
+ "steps": [
+  {
+   "key": "rule",
+   "start": 0.0,
+   "end": 5.7,
+   "hold": 1.8
+  },
+  {
+   "key": "lr",
+   "start": 5.7,
+   "end": 10.8,
+   "hold": 1.8
+  },
+  {
+   "key": "hand",
+   "start": 10.8,
+   "end": 16.0,
+   "hold": 1.8
+  },
+  {
+   "key": "sgd",
+   "start": 16.0,
+   "end": 20.8,
+   "hold": 2.2
+  }
+ ]
+}

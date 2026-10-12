@@ -1,0 +1,29 @@
+{
+ "duration": 22.5,
+ "steps": [
+  {
+   "key": "idea",
+   "start": 0.0,
+   "end": 4.5,
+   "hold": 1.8
+  },
+  {
+   "key": "mse",
+   "start": 4.5,
+   "end": 11.1,
+   "hold": 1.8
+  },
+  {
+   "key": "ce",
+   "start": 11.1,
+   "end": 17.4,
+   "hold": 1.8
+  },
+  {
+   "key": "cat",
+   "start": 17.4,
+   "end": 22.5,
+   "hold": 2.2
+  }
+ ]
+}

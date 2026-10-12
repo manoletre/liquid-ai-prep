@@ -1,0 +1,29 @@
+{
+ "duration": 17.9,
+ "steps": [
+  {
+   "key": "three",
+   "start": 0.0,
+   "end": 4.5,
+   "hold": 1.8
+  },
+  {
+   "key": "kfold",
+   "start": 4.5,
+   "end": 8.9,
+   "hold": 1.8
+  },
+  {
+   "key": "speak",
+   "start": 8.9,
+   "end": 13.2,
+   "hold": 1.8
+  },
+  {
+   "key": "norm",
+   "start": 13.2,
+   "end": 17.9,
+   "hold": 2.2
+  }
+ ]
+}

@@ -1,0 +1,29 @@
+{
+ "duration": 21.4,
+ "steps": [
+  {
+   "key": "sig",
+   "start": 0.0,
+   "end": 5.8,
+   "hold": 1.8
+  },
+  {
+   "key": "loss",
+   "start": 5.8,
+   "end": 11.2,
+   "hold": 1.8
+  },
+  {
+   "key": "grad",
+   "start": 11.2,
+   "end": 15.8,
+   "hold": 1.8
+  },
+  {
+   "key": "hand",
+   "start": 15.8,
+   "end": 21.4,
+   "hold": 2.2
+  }
+ ]
+}

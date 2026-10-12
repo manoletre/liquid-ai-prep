@@ -1,0 +1,29 @@
+{
+ "duration": 20.3,
+ "steps": [
+  {
+   "key": "net",
+   "start": 0.0,
+   "end": 6.1,
+   "hold": 1.8
+  },
+  {
+   "key": "fwd",
+   "start": 6.1,
+   "end": 10.6,
+   "hold": 1.8
+  },
+  {
+   "key": "bwd",
+   "start": 10.6,
+   "end": 15.3,
+   "hold": 1.8
+  },
+  {
+   "key": "upd",
+   "start": 15.3,
+   "end": 20.3,
+   "hold": 2.2
+  }
+ ]
+}

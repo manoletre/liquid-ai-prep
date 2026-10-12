@@ -1,0 +1,23 @@
+{
+ "duration": 18.6,
+ "steps": [
+  {
+   "key": "l2",
+   "start": 0.0,
+   "end": 5.8,
+   "hold": 1.8
+  },
+  {
+   "key": "l1",
+   "start": 5.8,
+   "end": 12.2,
+   "hold": 1.8
+  },
+  {
+   "key": "drop",
+   "start": 12.2,
+   "end": 18.6,
+   "hold": 2.2
+  }
+ ]
+}

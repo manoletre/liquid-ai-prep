@@ -2,7 +2,11 @@ import json, os, subprocess, shutil, sys
 ROOT = "/workspace/ml-tutor"; REPO = "/workspace/liquid-ai-prep"
 STEPS = f"{ROOT}/manim/steps"
 # Rendered 1080p30 videos live in manim/media/videos/<src>/1080p30 (src = the Manim file name without .py).
-VID = lambda src: f"{ROOT}/manim/media/videos/{src}/1080p30"
+def VID(src):
+    base = f"{ROOT}/manim/media/videos/{src}"
+    for q in ("1080p30", "720p30", "480p15"):
+        if os.path.isdir(f"{base}/{q}"): return f"{base}/{q}"
+    return f"{base}/1080p30"
 TPL = open(f"{ROOT}/build/template.html").read()
 
 SYM_ALL = {
@@ -32,6 +36,13 @@ SYM_ALL = {
  "wD":["D · deletions","Reference word missing from the ASR output."],
  "wI":["I · insertions","Extra word in the ASR output that isn't in the reference."],
  "wN":["N · reference length","Number of words in the reference transcript (not the hypothesis)."],
+ "lambda":["λ · regularization strength","Weight on the L2/L1 penalty. Bigger λ → stronger shrink / more sparsity."],
+ "sig":["σ(z) · sigmoid","1/(1+e^{−z}). Squashes a score to a probability in (0,1)."],
+ "loss":["L · loss","Training objective; often −log likelihood under a noise model."],
+ "grad":["∇L · gradient","Vector of partial derivatives; direction of steepest ascent of L."],
+ "w":["w · weights","Model parameters updated by gradient descent."],
+ "eta":["η · learning rate","Step size in w ← w − η∇L. Too big diverges; too small crawls."],
+ "p":["p · predicted probability","σ(z) in logistic regression; compared to label y in the gradient (p−y)x."],
 }
 MACROS = {"\\pit":["pi","\\pi_\\theta"],"\\piold":["piold","\\pi_{\\text{old}}"],"\\X":["x","x"],"\\Y":["y","y"],"\\Rw":["R","R"],
  "\\Adv":["A","A"],"\\bb":["b","b"],"\\rr":["rho","\\rho"],"\\eps":["eps","\\epsilon"],"\\lr":["alpha","\\alpha"],"\\gmu":["mu","\\mu"],

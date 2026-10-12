@@ -7,6 +7,7 @@ Personal lesson series for preparing for applied post-training roles (Liquid AI)
 | 01 | [Policy gradient → PPO → GRPO](lessons/01-policy-gradient-to-ppo/) |
 | 02 | [Explore vs exploit in GRPO](lessons/02-explore-exploit-grpo/) |
 | 03 | [Evaluation metrics, crystal clear](lessons/03-evaluation-metrics/) |
+| 04 | [ML fundamentals for pen-and-paper interviews](lessons/04-ml-fundamentals/) |
 
 ## How the lessons work
 

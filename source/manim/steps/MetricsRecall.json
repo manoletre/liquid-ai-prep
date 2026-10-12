@@ -1,0 +1,29 @@
+{
+ "duration": 23.1,
+ "steps": [
+  {
+   "key": "auroc",
+   "start": 0.0,
+   "end": 6.0,
+   "hold": 1.8
+  },
+  {
+   "key": "fbeta",
+   "start": 6.0,
+   "end": 12.4,
+   "hold": 1.8
+  },
+  {
+   "key": "pr",
+   "start": 12.4,
+   "end": 17.4,
+   "hold": 1.8
+  },
+  {
+   "key": "wer",
+   "start": 17.4,
+   "end": 23.1,
+   "hold": 2.2
+  }
+ ]
+}
