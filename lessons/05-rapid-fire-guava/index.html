@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>05 · Rapid-fire Guava drill</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:#0e1117;color:#e6e6e6;font:16px/1.5 Inter,system-ui,-apple-system,sans-serif;overflow:hidden}
+#app{height:100%;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:16px;padding:12px 20px;border-bottom:1px solid #2a2f3a;flex-shrink:0}
+header a{color:#8b949e;text-decoration:none;font-size:14px}
+header a:hover{color:#a78bfa}
+.progress-wrap{flex:1;height:6px;background:#1c212b;border-radius:3px;overflow:hidden}
+.progress{height:100%;background:#a78bfa;width:0;transition:width .2s}
+.meta{font-size:13px;color:#8b949e;white-space:nowrap}
+.toggles{display:flex;gap:8px;align-items:center}
+.tog{font-size:12px;padding:4px 10px;border:1px solid #2a2f3a;border-radius:6px;background:#151a23;color:#8b949e;cursor:pointer;user-select:none}
+.tog.on{border-color:#a78bfa;color:#a78bfa;background:#1a1530}
+.timer{font-variant-numeric:tabular-nums;font-size:14px;color:#fbbf24;min-width:2.5em;text-align:right}
+.timer.warn{color:#f87171}
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:24px;position:relative}
+.card{max-width:820px;width:100%;text-align:center}
+.qnum{color:#a78bfa;font-size:14px;font-weight:600;letter-spacing:.04em;margin-bottom:16px}
+.question{font-size:clamp(22px,3.5vw,36px);font-weight:600;line-height:1.35;margin:0 0 28px}
+.answer-box{width:100%;max-width:560px;margin:0 auto 20px;padding:12px 14px;border:1px solid #2a2f3a;border-radius:10px;background:#151a23;color:#e6e6e6;font:16px/1.4 Inter,system-ui,sans-serif;resize:vertical;min-height:48px;display:none}
+.answer-box:focus{outline:none;border-color:#a78bfa}
+.hint{color:#8b949e;font-size:14px;margin-top:8px}
+.reveal{margin-top:28px;padding:20px 24px;border:1px solid #2a2f3a;border-radius:12px;background:#151a23;text-align:left;display:none}
+.reveal.show{display:block}
+.reveal .label{font-size:12px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.reveal .text{font-size:clamp(18px,2.4vw,24px);line-height:1.45}
+.reveal .katex{font-size:1.05em}
+.actions{margin-top:28px;display:none;gap:12px;justify-content:center;flex-wrap:wrap}
+.actions.show{display:flex}
+.btn{padding:12px 20px;border-radius:10px;border:1px solid #2a2f3a;background:#151a23;color:#e6e6e6;font-size:15px;cursor:pointer;min-width:120px}
+.btn:hover{border-color:#a78bfa}
+.btn.got{border-color:#34d399;color:#34d399}
+.btn.shaky{border-color:#fbbf24;color:#fbbf24}
+.btn.missed{border-color:#f87171;color:#f87171}
+.btn.primary{background:#a78bfa;color:#0e1117;border-color:#a78bfa;font-weight:600}
+.btn.primary:hover{background:#c4b5fd}
+kbd{display:inline-block;padding:1px 6px;border:1px solid #2a2f3a;border-radius:4px;background:#1c212b;font-size:12px;font-family:ui-monospace,monospace}
+#end{display:none;max-width:560px;width:100%;text-align:center}
+#end.show{display:block}
+#end h1{font-size:28px;margin:0 0 8px}
+#end .score{font-size:48px;font-weight:700;color:#a78bfa;margin:16px 0}
+#end .breakdown{color:#8b949e;margin-bottom:28px;line-height:1.8}
+#end .breakdown b{color:#e6e6e6}
+.start-screen{max-width:560px;width:100%;text-align:center}
+.start-screen h1{font-size:32px;margin:0 0 8px}
+.start-screen p{color:#8b949e;margin:0 0 28px}
+.keys{font-size:13px;color:#8b949e;margin-top:24px;line-height:1.8}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <a href="../../">← Lessons</a>
+  <div class="progress-wrap"><div class="progress" id="bar"></div></div>
+  <span class="meta" id="count">0 / 40</span>
+  <span class="timer" id="timer" style="display:none">20</span>
+  <div class="toggles">
+    <button class="tog" id="tog-timer" type="button" title="20s countdown">Timer</button>
+    <button class="tog" id="tog-shuffle" type="button" title="Shuffle cards">Shuffle</button>
+    <button class="tog" id="tog-box" type="button" title="Show answer box">Type</button>
+  </div>
+</header>
+<main>
+  <div class="start-screen" id="start">
+    <h1>Guava rapid-fire</h1>
+    <p>40 pen-and-paper ML cards. Answer out loud, then reveal.</p>
+    <button class="btn primary" id="btn-start" type="button">Start · Space</button>
+    <div class="keys">
+      <div><kbd>Space</kbd> / <kbd>Enter</kbd> reveal answer</div>
+      <div><kbd>1</kbd> Got it · <kbd>2</kbd> Shaky · <kbd>3</kbd> Missed</div>
+    </div>
+  </div>
+  <div class="card" id="drill" style="display:none">
+    <div class="qnum" id="qnum"></div>
+    <div class="question" id="question"></div>
+    <textarea class="answer-box" id="box" placeholder="Optional: type your answer…" rows="2"></textarea>
+    <div class="hint" id="hint">Press <kbd>Space</kbd> or <kbd>Enter</kbd> to reveal</div>
+    <div class="reveal" id="reveal">
+      <div class="label">Answer</div>
+      <div class="text" id="answer"></div>
+    </div>
+    <div class="actions" id="actions">
+      <button class="btn got" data-r="got" type="button"><kbd>1</kbd> Got it</button>
+      <button class="btn shaky" data-r="shaky" type="button"><kbd>2</kbd> Shaky</button>
+      <button class="btn missed" data-r="missed" type="button"><kbd>3</kbd> Missed</button>
+    </div>
+  </div>
+  <div id="end">
+    <h1>Done</h1>
+    <div class="score" id="score"></div>
+    <div class="breakdown" id="breakdown"></div>
+    <button class="btn primary" id="btn-redo" type="button" style="display:none">Redo shaky / missed</button>
+    <button class="btn" id="btn-restart" type="button" style="margin-left:8px">Restart all</button>
+  </div>
+</main>
+</div>
+<script>
+const CARDS = [
+  {q:"Precision formula?", a:"TP / (TP + FP)", tex:true},
+  {q:"Recall formula?", a:"TP / (TP + FN)", tex:true},
+  {q:"F1 formula?", a:"2PR / (P + R) — the harmonic mean", tex:true},
+  {q:"P = 0.5, R = 1. What is F1?", a:"2·0.5·1 / (0.5+1) = 1/1.5 ≈ 0.67"},
+  {q:"Why the harmonic mean for F1?", a:"It's dragged toward the smaller value, so it's high only if both are high."},
+  {q:"What does AUROC mean as a probability?", a:"P(a random positive scores above a random negative)."},
+  {q:"AUROC: pos {0.8, 0.3}, neg {0.5, 0.3}?", a:"Pairs: 1, 1, 0, ½ (tie) → 2.5/4 = 0.625"},
+  {q:"Random AUROC? Random PR-AUC?", a:"0.5; the prevalence"},
+  {q:"When is PR-AUC better than AUROC?", a:"With rare positives where you care about what you flag."},
+  {q:"WER formula?", a:"(S + D + I) / N over reference words", tex:true},
+  {q:"Can WER be > 100%?", a:"Yes — insertions can exceed N."},
+  {q:"Raise the threshold: what happens to P and R?", a:"P usually goes up, R goes down."},
+  {q:"Medical screening: optimize precision or recall?", a:"Recall (misses are costly)."},
+  {q:"Spam filter: optimize precision or recall?", a:"Precision (don't lose real email)."},
+  {q:"2% train error, 18% val error?", a:"High variance (overfitting)."},
+  {q:"20% train error, 21% val error?", a:"High bias (underfitting)."},
+  {q:"Three fixes for overfitting?", a:"More data/augmentation, regularization (L2/L1/dropout), early stopping, simpler model."},
+  {q:"L1 vs L2?", a:"L1 → sparse weights (feature selection); L2 → shrinks all weights smoothly."},
+  {q:"Why does L2 reduce overfitting?", a:"Penalizes large weights → smoother function: a little more bias, much less variance."},
+  {q:"Dropout?", a:"Randomly zero units in training (ensemble + no co-adaptation); off at test time."},
+  {q:"Why a validation set separate from test?", a:"Val for tuning; test touched once for an unbiased final estimate."},
+  {q:"k-fold CV?", a:"Split into k folds; train on k−1, validate on 1; rotate; average."},
+  {q:"Example of data leakage?", a:"Normalize on full data before split; future info; same speaker/call in train and test."},
+  {q:"MSE formula?", a:"(1/N) Σ (y − ŷ)²", tex:true},
+  {q:"MSE = MLE under what noise?", a:"Gaussian."},
+  {q:"Binary cross-entropy?", a:"−[y log p + (1−y) log(1−p)]", tex:true},
+  {q:"Why cross-entropy for classification?", a:"Negative log-likelihood of the true label; punishes confident wrong answers."},
+  {q:"CE loss when y=1, p=0.01?", a:"−log 0.01 ≈ 4.6 — huge."},
+  {q:"Gradient descent update?", a:"w ← w − η ∇L(w)", tex:true},
+  {q:"Learning rate too big? Too small?", a:"Too big: diverges/oscillates. Too small: very slow."},
+  {q:"GD vs SGD vs mini-batch?", a:"All data / 1 example / B examples. Noise trades exactness for speed."},
+  {q:"Why does SGD often generalize well?", a:"Gradient noise finds flat minima."},
+  {q:"Sigmoid formula and σ(0)?", a:"1/(1+e^(−z)); σ(0) = 0.5", tex:true},
+  {q:"Logistic regression ∂L/∂z with CE?", a:"p − y", tex:true},
+  {q:"One step: w=0.5, x=2, y=1, b=0, η=0.1?", a:"z=1, p≈0.73, grad=(p−y)x≈−0.54, w≈0.55"},
+  {q:"Backprop in one sentence?", a:"Chain rule applied backward through the graph to get ∂L/∂(each weight)."},
+  {q:"Vanishing gradients: cause and fix?", a:"Multiplying small derivatives (sigmoid/tanh, deep nets). Fix: ReLU, residuals, norm, good init."},
+  {q:"Bias–variance tradeoff in one line?", a:"Simple → underfit (bias); complex → overfit (variance); minimize total error."},
+  {q:"Softmax?", a:"exp(zᵢ)/Σ exp(zⱼ) — logits → probabilities that sum to 1.", tex:true},
+  {q:"Class imbalance, three remedies?", a:"Class weights/resampling, threshold tuning, better metrics (PR-AUC/F1)."}
+];
+
+const STORE = "guava-rapid-fire-v1";
+const state = {
+  order: [],
+  i: 0,
+  revealed: false,
+  ratings: {}, // id -> got|shaky|missed
+  timerOn: false,
+  shuffle: false,
+  typeOn: false,
+  timerId: null,
+  secs: 20,
+  mode: "start", // start | drill | end
+  redoOnly: false
+};
+
+function save() {
+  try {
+    localStorage.setItem(STORE, JSON.stringify({
+      ratings: state.ratings,
+      timerOn: state.timerOn,
+      shuffle: state.shuffle,
+      typeOn: state.typeOn
+    }));
+  } catch (_) {}
+}
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    if (d.ratings) state.ratings = d.ratings;
+    if (typeof d.timerOn === "boolean") state.timerOn = d.timerOn;
+    if (typeof d.shuffle === "boolean") state.shuffle = d.shuffle;
+    if (typeof d.typeOn === "boolean") state.typeOn = d.typeOn;
+  } catch (_) {}
+}
+
+function cardId(idx) { return "c" + idx; }
+
+function buildOrder(onlyIds) {
+  let ids;
+  if (onlyIds && onlyIds.length) {
+    ids = onlyIds.slice();
+  } else {
+    ids = CARDS.map((_, i) => i);
+  }
+  if (state.shuffle) {
+    for (let i = ids.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [ids[i], ids[j]] = [ids[j], ids[i]];
+    }
+  }
+  state.order = ids;
+  state.i = 0;
+}
+
+function stopTimer() {
+  if (state.timerId) { clearInterval(state.timerId); state.timerId = null; }
+  document.getElementById("timer").style.display = state.timerOn ? "inline" : "none";
+}
+function startTimer() {
+  stopTimer();
+  if (!state.timerOn) return;
+  state.secs = 20;
+  const el = document.getElementById("timer");
+  el.style.display = "inline";
+  el.textContent = state.secs;
+  el.classList.remove("warn");
+  state.timerId = setInterval(() => {
+    state.secs--;
+    el.textContent = Math.max(0, state.secs);
+    if (state.secs <= 5) el.classList.add("warn");
+    if (state.secs <= 0) stopTimer();
+  }, 1000);
+}
+
+function renderMath(el, text) {
+  // Convert common formula bits with KaTeX when tex flagged; else plain
+  el.textContent = text;
+  if (typeof katex === "undefined") return;
+  // Replace known formula patterns inside the answer with rendered KaTeX spans
+  const patterns = [
+    [/TP\s*\/\s*\(TP\s*\+\s*FP\)/g, "\\dfrac{\\mathrm{TP}}{\\mathrm{TP}+\\mathrm{FP}}"],
+    [/TP\s*\/\s*\(TP\s*\+\s*FN\)/g, "\\dfrac{\\mathrm{TP}}{\\mathrm{TP}+\\mathrm{FN}}"],
+    [/2PR\s*\/\s*\(P\s*\+\s*R\)/g, "\\dfrac{2PR}{P+R}"],
+    [/\(S\s*\+\s*D\s*\+\s*I\)\s*\/\s*N/g, "\\dfrac{S+D+I}{N}"],
+    [/\(1\/N\)\s*Σ\s*\(y\s*−\s*ŷ\)²/g, "\\dfrac{1}{N}\\sum(y-\\hat{y})^2"],
+    [/−\[y log p \+ \(1−y\) log\(1−p\)\]/g, "-[y\\log p+(1-y)\\log(1-p)]"],
+    [/w\s*←\s*w\s*−\s*η\s*∇L\(w\)/g, "w \\leftarrow w - \\eta\\nabla L(w)"],
+    [/1\/\(1\+e\^\(−z\)\)/g, "\\sigma(z)=\\dfrac{1}{1+e^{-z}}"],
+    [/p\s*−\s*y/g, "p-y"],
+    [/exp\(zᵢ\)\/Σ exp\(zⱼ\)/g, "\\dfrac{e^{z_i}}{\\sum_j e^{z_j}}"]
+  ];
+  let html = text;
+  let used = false;
+  for (const [re, tex] of patterns) {
+    if (re.test(html)) {
+      used = true;
+      html = html.replace(re, () => {
+        try { return katex.renderToString(tex, {throwOnError:false}); }
+        catch(_) { return tex; }
+      });
+    }
+  }
+  if (used) el.innerHTML = html;
+}
+
+function showCard() {
+  const total = state.order.length;
+  if (state.i >= total) { showEnd(); return; }
+  state.mode = "drill";
+  state.revealed = false;
+  document.getElementById("start").style.display = "none";
+  document.getElementById("end").classList.remove("show");
+  document.getElementById("drill").style.display = "block";
+
+  const idx = state.order[state.i];
+  const c = CARDS[idx];
+  document.getElementById("qnum").textContent = `Card ${state.i + 1} of ${total}`;
+  document.getElementById("question").textContent = c.q;
+  document.getElementById("reveal").classList.remove("show");
+  document.getElementById("actions").classList.remove("show");
+  document.getElementById("hint").style.display = "block";
+  const box = document.getElementById("box");
+  box.value = "";
+  box.style.display = state.typeOn ? "block" : "none";
+  document.getElementById("count").textContent = `${state.i + 1} / ${total}`;
+  document.getElementById("bar").style.width = ((state.i) / total * 100) + "%";
+  startTimer();
+  if (state.typeOn) box.focus();
+}
+
+function reveal() {
+  if (state.mode !== "drill" || state.revealed) return;
+  state.revealed = true;
+  stopTimer();
+  const idx = state.order[state.i];
+  const c = CARDS[idx];
+  const ans = document.getElementById("answer");
+  if (c.tex) renderMath(ans, c.a);
+  else ans.textContent = c.a;
+  document.getElementById("reveal").classList.add("show");
+  document.getElementById("actions").classList.add("show");
+  document.getElementById("hint").style.display = "none";
+}
+
+function rate(r) {
+  if (state.mode !== "drill" || !state.revealed) return;
+  const idx = state.order[state.i];
+  state.ratings[cardId(idx)] = r;
+  save();
+  state.i++;
+  document.getElementById("bar").style.width = (state.i / state.order.length * 100) + "%";
+  showCard();
+}
+
+function showEnd() {
+  state.mode = "end";
+  stopTimer();
+  document.getElementById("drill").style.display = "none";
+  document.getElementById("start").style.display = "none";
+  const end = document.getElementById("end");
+  end.classList.add("show");
+  document.getElementById("bar").style.width = "100%";
+
+  let got = 0, shaky = 0, missed = 0;
+  const weak = [];
+  for (const idx of state.order) {
+    const r = state.ratings[cardId(idx)];
+    if (r === "got") got++;
+    else if (r === "shaky") { shaky++; weak.push(idx); }
+    else if (r === "missed") { missed++; weak.push(idx); }
+    else weak.push(idx);
+  }
+  const total = state.order.length;
+  document.getElementById("score").textContent = `${got} / ${total}`;
+  document.getElementById("breakdown").innerHTML =
+    `<b style="color:#34d399">${got}</b> got it · <b style="color:#fbbf24">${shaky}</b> shaky · <b style="color:#f87171">${missed}</b> missed`;
+  const redo = document.getElementById("btn-redo");
+  if (weak.length) {
+    redo.style.display = "inline-block";
+    redo.onclick = () => {
+      state.redoOnly = true;
+      buildOrder(weak);
+      showCard();
+    };
+  } else {
+    redo.style.display = "none";
+  }
+  document.getElementById("count").textContent = `${total} / ${total}`;
+}
+
+function begin(all) {
+  state.redoOnly = false;
+  if (all) {
+    // clear ratings for a fresh run? keep history but rebuild full order
+  }
+  buildOrder(null);
+  showCard();
+}
+
+// UI wiring
+load();
+document.getElementById("tog-timer").classList.toggle("on", state.timerOn);
+document.getElementById("tog-shuffle").classList.toggle("on", state.shuffle);
+document.getElementById("tog-box").classList.toggle("on", state.typeOn);
+
+document.getElementById("tog-timer").onclick = () => {
+  state.timerOn = !state.timerOn;
+  document.getElementById("tog-timer").classList.toggle("on", state.timerOn);
+  save();
+  if (state.mode === "drill" && !state.revealed) startTimer();
+  else stopTimer();
+};
+document.getElementById("tog-shuffle").onclick = () => {
+  state.shuffle = !state.shuffle;
+  document.getElementById("tog-shuffle").classList.toggle("on", state.shuffle);
+  save();
+};
+document.getElementById("tog-box").onclick = () => {
+  state.typeOn = !state.typeOn;
+  document.getElementById("tog-box").classList.toggle("on", state.typeOn);
+  save();
+  const box = document.getElementById("box");
+  if (state.mode === "drill") {
+    box.style.display = state.typeOn ? "block" : "none";
+    if (state.typeOn) box.focus();
+  }
+};
+
+document.getElementById("btn-start").onclick = () => begin(true);
+document.getElementById("btn-restart").onclick = () => begin(true);
+
+document.querySelectorAll("#actions .btn").forEach(b => {
+  b.onclick = () => rate(b.dataset.r);
+});
+
+document.addEventListener("keydown", e => {
+  if (e.target && e.target.id === "box" && e.key !== "Enter") return;
+  if (state.mode === "start" && (e.key === " " || e.key === "Enter")) {
+    e.preventDefault(); begin(true); return;
+  }
+  if (state.mode === "drill") {
+    if (!state.revealed && (e.key === " " || e.key === "Enter")) {
+      e.preventDefault(); reveal(); return;
+    }
+    if (state.revealed) {
+      if (e.key === "1") { e.preventDefault(); rate("got"); }
+      else if (e.key === "2") { e.preventDefault(); rate("shaky"); }
+      else if (e.key === "3") { e.preventDefault(); rate("missed"); }
+    }
+  }
+});
+</script>
+</body>
+</html>
