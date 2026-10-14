@@ -139,6 +139,8 @@ function drillHTML(){return `<div class="card roomy"><p class="eyebrow">Intervie
   ${DRILL.map((q,i)=>`<div class="qblock"><p class="qtext"><span class="tag">⚡ ${i+1}.</span> ${q.q}</p>${ansHTML(q.id,"Your answer…")}<div class="row"><button class="primary" data-reveal="${q.id}">Reveal</button><span class="saved" data-saved="${q.id}"></span></div><div data-revealbox="${q.id}" hidden>${cmpHTML(q.id)}</div></div>`).join("")}</div>`;}
 function revisitHTML(){return `<div class="card roomy"><p class="eyebrow">The end</p><h2>Revisit your answers</h2><p class="muted">What you thought, next to the model answers, with your rating and notes.</p>
   ${REV.map(([q,lab])=>`<div class="qblock"><p class="qtext"><span class="tag">${lab} ·</span> ${q.q}</p><div data-cmpro="${q.id}"><div class="cmp"><div class="mine"><h5>Your answer</h5><p></p></div><div class="model"><h5>Model answer</h5><p>${q.model}</p></div></div><div class="rate">Rating: <b class="rv">–</b></div><div class="revnote"></div></div></div>`).join("")}
+  <div class="qblock"><p class="qtext"><b>Send me what was shaky.</b> This copies every Partly / Missed rating and every “unclear” note, so you can paste it into chat and it gets re-quizzed next lesson.</p>
+    <div class="row"><button class="primary" id="copyrep">Copy my ratings &amp; unclear notes</button><span class="saved" id="copied"></span></div><textarea id="reptext" readonly hidden></textarea></div>
   <div class="summary"><h3>Summary</h3><ol>${LESSON.summary.map(s=>`<li>${s}</li>`).join("")}</ol></div></div>`;}
 $("#screens").innerHTML=SCR.map((s,i)=>`<section class="screen" data-scr="${i}" id="s${i}">${s.type==="intro"?introHTML():s.type==="ch"?chapterHTML(CH[s.ci],s.ci):s.type==="drill"?drillHTML():revisitHTML()}</section>`).join("");
 $("#pills").innerHTML=SCR.map((s,i)=>`<span class="pill" data-go="${i}" title="${s.type==="ch"?CH[s.ci].title:s.type}">${s.type==="intro"?"⌂":s.type==="ch"?s.ci+1:s.type==="drill"?"⚡":"✓"}</span>`).join("");
@@ -201,7 +203,13 @@ function backward(){const cur=SCR[scr];if(cur.type!=="ch")return go(scr-1);const
   if(st.phase===2){setPhase(ci,1);return playStep(ci,CH[ci].steps.length-1);}
   setPhase(ci,2);}
 function replay(){const cur=SCR[scr];if(cur.type==="ch"&&S[cur.ci].phase===1)playStep(cur.ci,Math.max(0,S[cur.ci].cur));}
+function report(){const strip=h=>{const d=document.createElement("div");d.innerHTML=h;return d.textContent.trim();};const lab={got:"Got it",partly:"Partly",missed:"Missed"};
+  const lines=REV.filter(([q])=>["partly","missed"].includes(store.get(q.id,"rating"))||store.get(q.id,"note").trim()).map(([q,l])=>`- ${l} [${lab[store.get(q.id,"rating")]||"not rated"}]: ${strip(q.q).slice(0,160)}${store.get(q.id,"note").trim()?"\n  Unclear: "+store.get(q.id,"note").trim():""}`);
+  const rated=REV.filter(([q])=>store.get(q.id,"rating")).length;
+  return `${LESSON.title}\nRated ${rated} of ${REV.length} questions. Shaky or unclear:\n${lines.length?lines.join("\n"):"- nothing, everything rated Got it"}`;}
 document.addEventListener("click",e=>{const t=e.target;
+  if(t.id==="copyrep"){const txt=report(),ta=$("#reptext");ta.value=txt;ta.hidden=false;ta.select();
+    (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>$("#copied").textContent="copied ✓ paste it in chat").catch(()=>{try{document.execCommand("copy");$("#copied").textContent="copied ✓";}catch(_){$("#copied").textContent="select the text below and copy it";}});return;}
   const g=t.closest("[data-go]");if(g){go(+g.dataset.go);return;}
   const stt=t.closest("[data-start]");if(stt){const ci=+stt.dataset.start;setPhase(ci,1);playStep(ci,0);return;}
   const rv=t.closest("[data-reveal]");if(rv){const q=rv.dataset.reveal;store.set(q,"revealed","1");showReveal(q);render();return;}

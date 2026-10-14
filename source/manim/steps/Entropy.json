@@ -1,28 +1,28 @@
 {
- "duration": 28.0,
+ "duration": 30.0,
  "steps": [
   {
-   "key": "formula",
+   "key": "avg",
    "start": 0.0,
-   "end": 5.6,
+   "end": 7.5,
    "hold": 1.8
   },
   {
-   "key": "flat",
-   "start": 5.6,
-   "end": 9.7,
+   "key": "three",
+   "start": 7.5,
+   "end": 14.3,
    "hold": 1.8
   },
   {
-   "key": "sharpen",
-   "start": 9.7,
-   "end": 19.1,
+   "key": "edge",
+   "start": 14.3,
+   "end": 21.7,
    "hold": 1.8
   },
   {
-   "key": "group",
-   "start": 19.1,
-   "end": 28.0,
+   "key": "llm",
+   "start": 21.7,
+   "end": 30.0,
    "hold": 2.2
   }
  ]

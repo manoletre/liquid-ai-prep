@@ -1,0 +1,35 @@
+{
+ "duration": 37.3,
+ "steps": [
+  {
+   "key": "recap",
+   "start": 0.0,
+   "end": 7.1,
+   "hold": 1.8
+  },
+  {
+   "key": "gap",
+   "start": 7.1,
+   "end": 15.0,
+   "hold": 1.8
+  },
+  {
+   "key": "asym",
+   "start": 15.0,
+   "end": 22.9,
+   "hold": 1.8
+  },
+  {
+   "key": "train",
+   "start": 22.9,
+   "end": 28.6,
+   "hold": 1.8
+  },
+  {
+   "key": "rlhf",
+   "start": 28.6,
+   "end": 37.3,
+   "hold": 2.2
+  }
+ ]
+}

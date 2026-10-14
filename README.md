@@ -8,6 +8,8 @@ Personal lesson series for preparing for applied post-training roles (Liquid AI)
 | 02 | [Explore vs exploit in GRPO](lessons/02-explore-exploit-grpo/) |
 | 03 | [Evaluation metrics, crystal clear](lessons/03-evaluation-metrics/) |
 | 04 | [ML fundamentals for pen-and-paper interviews](lessons/04-ml-fundamentals/) |
+| 05 | [Guava rapid-fire drill](lessons/05-rapid-fire-guava/) |
+| 06 | [Surprise → cross-entropy → entropy → KL divergence](lessons/06-surprise-to-kl/) |
 
 ## How the lessons work
 

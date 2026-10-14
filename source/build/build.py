@@ -43,6 +43,12 @@ SYM_ALL = {
  "w":["w · weights","Model parameters updated by gradient descent."],
  "eta":["η · learning rate","Step size in w ← w − η∇L. Too big diverges; too small crawls."],
  "p":["p · predicted probability","σ(z) in logistic regression; compared to label y in the gradient (p−y)x."],
+ "surp":["−log p · surprise","Cost of an outcome you gave probability p: how many halvings below 1 (bits)."],
+ "Pd":["P · true distribution","What really happens: the data or the labels."],
+ "Qd":["Q · model distribution","What the model predicts."],
+ "CE":["H(P,Q) · cross-entropy","Average surprise when the truth is P and you predict Q. The classification loss."],
+ "HP":["H(P) · entropy","Average surprise when you predict with the truth itself. 0 when certain, log K when uniform."],
+ "KL":["D_KL(P‖Q) · KL divergence","H(P,Q) − H(P): extra surprise from using Q instead of P. Always ≥ 0, not symmetric."],
 }
 MACROS = {"\\pit":["pi","\\pi_\\theta"],"\\piold":["piold","\\pi_{\\text{old}}"],"\\X":["x","x"],"\\Y":["y","y"],"\\Rw":["R","R"],
  "\\Adv":["A","A"],"\\bb":["b","b"],"\\rr":["rho","\\rho"],"\\eps":["eps","\\epsilon"],"\\lr":["alpha","\\alpha"],"\\gmu":["mu","\\mu"],
