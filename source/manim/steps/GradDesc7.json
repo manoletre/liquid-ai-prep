@@ -1,0 +1,35 @@
+{
+ "duration": 47.933,
+ "steps": [
+  {
+   "key": "hill",
+   "start": 0.0,
+   "end": 10.8,
+   "hold": 1.8
+  },
+  {
+   "key": "rule",
+   "start": 10.8,
+   "end": 19.7,
+   "hold": 1.8
+  },
+  {
+   "key": "ex1",
+   "start": 19.7,
+   "end": 29.6,
+   "hold": 1.8
+  },
+  {
+   "key": "ex2",
+   "start": 29.6,
+   "end": 40.633,
+   "hold": 1.8
+  },
+  {
+   "key": "faded",
+   "start": 40.633,
+   "end": 47.933,
+   "hold": 2.2
+  }
+ ]
+}

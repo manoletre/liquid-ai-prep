@@ -10,6 +10,7 @@ Personal lesson series for preparing for applied post-training roles (Liquid AI)
 | 04 | [ML fundamentals for pen-and-paper interviews](lessons/04-ml-fundamentals/) |
 | 05 | [Guava rapid-fire drill](lessons/05-rapid-fire-guava/) |
 | 06 | [Surprise → cross-entropy → entropy → KL divergence](lessons/06-surprise-to-kl/) |
+| 07 | [MSE → gradient descent → logistic regression](lessons/07-mse-gd-logreg/) |
 
 ## How the lessons work
 

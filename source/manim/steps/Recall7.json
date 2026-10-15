@@ -1,0 +1,29 @@
+{
+ "duration": 31.367,
+ "steps": [
+  {
+   "key": "cekl",
+   "start": 0.0,
+   "end": 7.2,
+   "hold": 1.8
+  },
+  {
+   "key": "asym",
+   "start": 7.2,
+   "end": 15.0,
+   "hold": 1.8
+  },
+  {
+   "key": "auroc",
+   "start": 15.0,
+   "end": 23.267,
+   "hold": 1.8
+  },
+  {
+   "key": "clip",
+   "start": 23.267,
+   "end": 31.367,
+   "hold": 2.2
+  }
+ ]
+}

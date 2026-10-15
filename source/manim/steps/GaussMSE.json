@@ -1,0 +1,35 @@
+{
+ "duration": 45.1,
+ "steps": [
+  {
+   "key": "noise",
+   "start": 0.0,
+   "end": 11.1,
+   "hold": 1.8
+  },
+  {
+   "key": "bell",
+   "start": 11.1,
+   "end": 20.7,
+   "hold": 1.8
+  },
+  {
+   "key": "neglog",
+   "start": 20.7,
+   "end": 28.4,
+   "hold": 1.8
+  },
+  {
+   "key": "sum",
+   "start": 28.4,
+   "end": 36.2,
+   "hold": 1.8
+  },
+  {
+   "key": "edge",
+   "start": 36.2,
+   "end": 45.1,
+   "hold": 2.2
+  }
+ ]
+}

@@ -49,6 +49,10 @@ SYM_ALL = {
  "CE":["H(P,Q) · cross-entropy","Average surprise when the truth is P and you predict Q. The classification loss."],
  "HP":["H(P) · entropy","Average surprise when you predict with the truth itself. 0 when certain, log K when uniform."],
  "KL":["D_KL(P‖Q) · KL divergence","H(P,Q) − H(P): extra surprise from using Q instead of P. Always ≥ 0, not symmetric."],
+ "yhat":["ŷ · prediction","What the model outputs for one example; the truth y misses it by some noise y − ŷ."],
+ "noise":["σ · noise width","Standard deviation of the Gaussian noise around the prediction. Doesn't change which model wins."],
+ "mse":["MSE · mean squared error","(1/N) Σ (y − ŷ)². The −log likelihood under Gaussian noise, up to constants."],
+ "z":["z · score (logit)","w·x (+ b). Any real number; the log-odds ln(p/(1−p))."],
 }
 MACROS = {"\\pit":["pi","\\pi_\\theta"],"\\piold":["piold","\\pi_{\\text{old}}"],"\\X":["x","x"],"\\Y":["y","y"],"\\Rw":["R","R"],
  "\\Adv":["A","A"],"\\bb":["b","b"],"\\rr":["rho","\\rho"],"\\eps":["eps","\\epsilon"],"\\lr":["alpha","\\alpha"],"\\gmu":["mu","\\mu"],

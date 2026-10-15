@@ -1,0 +1,53 @@
+{
+ "duration": 63.8,
+ "steps": [
+  {
+   "key": "recap",
+   "start": 0.0,
+   "end": 7.3,
+   "hold": 1.8
+  },
+  {
+   "key": "sigmoid",
+   "start": 7.3,
+   "end": 18.0,
+   "hold": 1.8
+  },
+  {
+   "key": "loss",
+   "start": 18.0,
+   "end": 26.3,
+   "hold": 1.8
+  },
+  {
+   "key": "slope",
+   "start": 26.3,
+   "end": 33.6,
+   "hold": 1.8
+  },
+  {
+   "key": "chain",
+   "start": 33.6,
+   "end": 42.3,
+   "hold": 1.8
+  },
+  {
+   "key": "ex1",
+   "start": 42.3,
+   "end": 50.4,
+   "hold": 1.8
+  },
+  {
+   "key": "ex2",
+   "start": 50.4,
+   "end": 57.4,
+   "hold": 1.8
+  },
+  {
+   "key": "faded",
+   "start": 57.4,
+   "end": 63.8,
+   "hold": 2.2
+  }
+ ]
+}
