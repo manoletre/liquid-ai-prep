@@ -11,6 +11,9 @@ Personal lesson series for preparing for applied post-training roles (Liquid AI)
 | 05 | [Guava rapid-fire drill](lessons/05-rapid-fire-guava/) |
 | 06 | [Surprise → cross-entropy → entropy → KL divergence](lessons/06-surprise-to-kl/) |
 | 07 | [MSE → gradient descent → logistic regression](lessons/07-mse-gd-logreg/) |
+| 08 | [Bias–variance → regularization](lessons/08-bias-variance-regularize/) |
+| 09 | [Backprop by hand on a tiny network](lessons/09-backprop-by-hand/) |
+| 10 | [Train/val/test, cross-validation and data leakage](lessons/10-splits-cv-leakage/) |
 
 ## How the lessons work
 

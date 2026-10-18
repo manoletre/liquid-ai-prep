@@ -1,0 +1,41 @@
+{
+ "duration": 44.633,
+ "steps": [
+  {
+   "key": "why",
+   "start": 0.0,
+   "end": 6.9,
+   "hold": 1.8
+  },
+  {
+   "key": "how",
+   "start": 6.9,
+   "end": 14.9,
+   "hold": 1.8
+  },
+  {
+   "key": "ex1",
+   "start": 14.9,
+   "end": 22.6,
+   "hold": 1.8
+  },
+  {
+   "key": "ex2",
+   "start": 22.6,
+   "end": 30.433,
+   "hold": 1.8
+  },
+  {
+   "key": "cost",
+   "start": 30.433,
+   "end": 38.533,
+   "hold": 1.8
+  },
+  {
+   "key": "faded",
+   "start": 38.533,
+   "end": 44.633,
+   "hold": 2.2
+  }
+ ]
+}

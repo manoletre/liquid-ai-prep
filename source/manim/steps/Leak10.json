@@ -1,0 +1,35 @@
+{
+ "duration": 41.9,
+ "steps": [
+  {
+   "key": "def",
+   "start": 0.0,
+   "end": 8.7,
+   "hold": 1.8
+  },
+  {
+   "key": "ex1",
+   "start": 8.7,
+   "end": 17.4,
+   "hold": 1.8
+  },
+  {
+   "key": "ex2",
+   "start": 17.4,
+   "end": 25.9,
+   "hold": 1.8
+  },
+  {
+   "key": "kinds",
+   "start": 25.9,
+   "end": 34.6,
+   "hold": 1.8
+  },
+  {
+   "key": "faded",
+   "start": 34.6,
+   "end": 41.9,
+   "hold": 2.2
+  }
+ ]
+}

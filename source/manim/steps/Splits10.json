@@ -1,0 +1,35 @@
+{
+ "duration": 42.6,
+ "steps": [
+  {
+   "key": "why",
+   "start": 0.0,
+   "end": 8.2,
+   "hold": 1.8
+  },
+  {
+   "key": "jobs",
+   "start": 8.2,
+   "end": 16.2,
+   "hold": 1.8
+  },
+  {
+   "key": "ex1",
+   "start": 16.2,
+   "end": 25.2,
+   "hold": 1.8
+  },
+  {
+   "key": "ex2",
+   "start": 25.2,
+   "end": 35.5,
+   "hold": 1.8
+  },
+  {
+   "key": "faded",
+   "start": 35.5,
+   "end": 42.6,
+   "hold": 2.2
+  }
+ ]
+}

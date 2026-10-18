@@ -4,7 +4,7 @@ import os, sys, json
 BASE = os.environ.get("BASE", "http://localhost:8765/lessons/")
 SHOTS = "/workspace/ml-tutor/lessons/shots"
 LONG = ("My prediction, written out at length to stress the layout: " + "the detector misses some hallucinations and raises false alarms; " * 9).strip()
-SLUG = {"1": "01-policy-gradient-to-ppo", "2": "02-explore-exploit-grpo", "3": "03-evaluation-metrics"}
+SLUG = {"1": "01-policy-gradient-to-ppo", "2": "02-explore-exploit-grpo", "3": "03-evaluation-metrics", "10": "10-splits-cv-leakage"}
 def run(n, sweep=False, shots=False):
     slug = SLUG[n]; tag = f"l{n}"; errs = []; media = []; fails = []
     def ok(cond, msg):
