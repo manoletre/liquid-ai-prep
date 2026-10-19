@@ -1,0 +1,35 @@
+{
+ "duration": 39.3,
+ "steps": [
+  {
+   "key": "knobs",
+   "start": 0.0,
+   "end": 7.7,
+   "hold": 1.8
+  },
+  {
+   "key": "scale",
+   "start": 7.7,
+   "end": 15.8,
+   "hold": 1.8
+  },
+  {
+   "key": "ex1",
+   "start": 15.8,
+   "end": 24.5,
+   "hold": 1.8
+  },
+  {
+   "key": "ex2",
+   "start": 24.5,
+   "end": 33.2,
+   "hold": 1.8
+  },
+  {
+   "key": "faded",
+   "start": 33.2,
+   "end": 39.3,
+   "hold": 2.2
+  }
+ ]
+}

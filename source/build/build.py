@@ -60,6 +60,13 @@ SYM_ALL = {
  "kf":["k · folds","k-fold CV: k trainings, each validated on the one fold it didn't train on."],
  "leak":["leakage","Information the model couldn't have at prediction time reaching training (test data, the future, the label)."],
  "delta":["δ · delta","∂L/∂(node): how much the loss moves per small nudge of that node. Passed backward."],
+ "loraW":["W · frozen base","Pretrained weight matrix kept frozen in LoRA; δ still flows through it, but no ∂L/∂W is stored."],
+ "loraA":["A · LoRA down","Trainable r × d_in factor. With B forms the low-rank update ΔW = BA."],
+ "loraB":["B · LoRA up","Trainable d_out × r factor. Together with A: rank(BA) ≤ r."],
+ "lora_r":["r · LoRA rank","Width of the adapter. Capacity of ΔW. Typical 4–64; r ≪ d. GRPO often uses r = 32."],
+ "lora_a":["α · LoRA alpha","Strength knob. Effective scale of the adapter is α/r. Often set to r or 2r."],
+ "lora_drop":["LoRA dropout","Randomly zeros adapter activations each forward pass; regularizes the update so it doesn't rely on one direction."],
+ "lora_scale":["α/r · LoRA scale","Multiplier on BA in the forward pass. Keeps update size stable when you change r."],
 }
 MACROS = {"\\pit":["pi","\\pi_\\theta"],"\\piold":["piold","\\pi_{\\text{old}}"],"\\X":["x","x"],"\\Y":["y","y"],"\\Rw":["R","R"],
  "\\Adv":["A","A"],"\\bb":["b","b"],"\\rr":["rho","\\rho"],"\\eps":["eps","\\epsilon"],"\\lr":["alpha","\\alpha"],"\\gmu":["mu","\\mu"],

@@ -14,6 +14,7 @@ Personal lesson series for preparing for applied post-training roles (Liquid AI)
 | 08 | [Bias–variance → regularization](lessons/08-bias-variance-regularize/) |
 | 09 | [Backprop by hand on a tiny network](lessons/09-backprop-by-hand/) |
 | 10 | [Train/val/test, cross-validation and data leakage](lessons/10-splits-cv-leakage/) |
+| 11 | [LoRA: low-rank adapters](lessons/11-lora-adapters/) |
 
 ## How the lessons work
 

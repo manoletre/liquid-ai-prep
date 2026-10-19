@@ -1,0 +1,29 @@
+{
+ "duration": 31.5,
+ "steps": [
+  {
+   "key": "kl",
+   "start": 0.0,
+   "end": 7.867,
+   "hold": 1.8
+  },
+  {
+   "key": "opt",
+   "start": 7.867,
+   "end": 15.533,
+   "hold": 1.8
+  },
+  {
+   "key": "clip",
+   "start": 15.533,
+   "end": 23.433,
+   "hold": 1.8
+  },
+  {
+   "key": "auroc",
+   "start": 23.433,
+   "end": 31.5,
+   "hold": 2.2
+  }
+ ]
+}
