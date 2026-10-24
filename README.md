@@ -15,6 +15,11 @@ Personal lesson series for preparing for applied post-training roles (Liquid AI)
 | 09 | [Backprop by hand on a tiny network](lessons/09-backprop-by-hand/) |
 | 10 | [Train/val/test, cross-validation and data leakage](lessons/10-splits-cv-leakage/) |
 | 11 | [LoRA: low-rank adapters](lessons/11-lora-adapters/) |
+| 12 | [Sampling: temperature, top-p and min_p](lessons/12-temperature-top-p-min-p/) |
+| 13 | [Number formats: fp32, fp16, bf16 and memory math](lessons/13-fp16-bf16-memory/) |
+| 14 | [Quantization basics](lessons/14-quantization-basics/) |
+| 15 | [QAT: fake quantization and the straight-through estimator](lessons/15-qat-fake-quant-ste/) |
+| 16 | [GRPO reward scaling: scale_rewards = group, batch or none](lessons/16-grpo-scale-rewards/) |
 
 ## How the lessons work
 
